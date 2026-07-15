@@ -41,7 +41,7 @@ if (isLogin !== "true") {
 
 async function loadUserInfo() {
     try {
-        const response = await fetch(`http://localhost:8080/users/${userId}`);
+        const response = await apiFetch(`/users/${userId}`);
 
         if (!response.ok) {
             alert("회원 정보를 불러오지 못했습니다.");
@@ -131,17 +131,16 @@ userUpdateBtn.addEventListener("click", async function () {
         return;
     }
 
-    const requestBody = {
-        nickname: nicknameInput.value.trim()
-    };
+    const formData = new FormData();
+    formData.append("nickname", nicknameInput.value.trim());
+    if (profileImageInput.files.length > 0) {
+        formData.append("profileImage", profileImageInput.files[0]);
+    }
 
     try {
-        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+        const response = await apiFetch(`/users/${userId}`, {
             method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(requestBody)
+            body: formData
         });
 
         if (!response.ok) {
@@ -160,12 +159,15 @@ userUpdateBtn.addEventListener("click", async function () {
         const updatedUser = await response.json();
 
         localStorage.setItem("nickname", updatedUser.nickname);
+        localStorage.setItem("profileImage", updatedUser.profileImage || "");   
 
         originalNickname = updatedUser.nickname;
         nicknameInput.value = updatedUser.nickname;
 
         userUpdateBtn.classList.remove("active");
         profileImageInput.value = "";
+        setProfileImage(headerProfileImage, updatedUser.profileImage);
+        setProfileImage(userProfilePreview, updatedUser.profileImage);
 
         userUpdateComplete.classList.add("active");
 
@@ -201,7 +203,7 @@ userDeleteCancelBtn.addEventListener("click", function () {
 
 userDeleteConfirmBtn.addEventListener("click", async function () {
     try {
-        const response = await fetch(`http://localhost:8080/users/${userId}`, {
+        const response = await apiFetch(`/users/${userId}`, {
             method: "DELETE"
         });
 
@@ -215,6 +217,7 @@ userDeleteConfirmBtn.addEventListener("click", async function () {
         localStorage.removeItem("email");
         localStorage.removeItem("nickname");
         localStorage.removeItem("profileImage");
+        localStorage.removeItem("accessToken");
 
         alert("회원 탈퇴가 완료되었습니다.");
         location.href = "login.html";

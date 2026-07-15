@@ -23,6 +23,7 @@ body {
 }
 .back-btn {
     background-color: #F4F5F7;
+    color: #8dcbc4;
     border : 0;
     font-size: 30px;
     position: absolute;
@@ -41,15 +42,6 @@ body {
     margin: 0;
     cursor: pointer;
 }
-.profile-circle,
-.header-profile-circle {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #d9d9d9;
-    overflow: hidden;
-    margin: 10px;
-}
 
 .profile-image {
     width: 100%;
@@ -58,26 +50,7 @@ body {
     object-fit: cover;
     display: none;
 }
-.user-info-btn {
-    position: absolute;
-    right: 20px;
-    cursor: pointer;
-    border: none;
-    padding: 0;
-}
-.profile-dropdown {
-    position: absolute;
-    top: 65px;
-    right: 20px;
 
-    background-color: rgb(204, 204, 204);
-    padding: 15px;
-    border-radius: 5px;
-
-    display: none;
-    z-index: 10;
-    flex-direction: column;
-}
 .profile-dropdown-menu {
     padding: 5px;
     color: black;
@@ -87,16 +60,123 @@ body {
     text-decoration: none;;
 
 }
-.title:hover .profile-dropdown {
+.profile-circle {
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+    background-color: #d9d9d9;
+
+    overflow: hidden;
+    flex-shrink: 0;
+
+    margin: 10px;
+}
+
+/*
+    헤더 프로필 버튼과 드롭다운을 묶는 영역
+
+    width를 60px로 넓혀서 프로필 주변의
+    마우스 감지 영역도 조금 더 크게 만든다.
+
+    height를 65px로 주어 프로필에서 드롭다운까지
+    마우스를 이동하는 동안 hover가 쉽게 끊기지 않게 한다.
+*/
+.profile-menu {
+    position: absolute;
+    top: 20px;
+    right: 5px;
+
     display: flex;
-    align-items: center;
+    justify-content: center;
+    align-items: flex-start;
+
+    width: 60px;
+    height: 65px;
+
+    z-index: 20;
+}
+
+/* 헤더 프로필 버튼 */
+.user-info-btn,
+.header-profile-circle {
+    display: block;
+
+    width: 30px;
+    height: 30px;
+
+    margin: 10px 0 0;
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* 드롭다운 */
+.profile-dropdown {
+    position: absolute;
+    top: 45px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+
+    width: 100px;
+    padding: 15px;
+    
+    background-color:#ddecea;
+
+    border-radius: 5px;
+
+    z-index: 30;
+}
+
+/*
+    프로필 버튼 또는 드롭다운 영역에
+    마우스가 있을 때 계속 보여준다.
+*/
+.profile-menu:hover .profile-dropdown {
+    display: flex;
+}
+
+/* 드롭다운 메뉴 */
+.profile-dropdown-menu {
+    display: block;
+
+    width: 100%;
+    padding: 6px 5px;
+
+    box-sizing: border-box;
+
+    color: black;
+    background-color: transparent;
+    border: none;
+
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.profile-dropdown-menu:hover {
+    font-weight: bold;
+    background-color:#aedcd7;
 }
 .main-hr {
     width: 100%;
     height: 20px;
     margin: 0;
     border:none;
-    border-top: 2px black solid;
+    border-top: 2px dashed #8dcbc4;
 }
 hr {
     width: 100%;
@@ -109,11 +189,21 @@ hr {
     flex: 1;
 }
 .post-wrap {
-    /* background-color: #FFFFFF; */
     width: 600px;
     display: flex;
     flex-direction: column;
     justify-content: center;
+}
+.post-area{
+    color:#3dbaab;
+}
+.post-area::after {
+    content: " |";
+    margin: 0 8px;
+    color:#000000;
+    font-weight: 400;
+    /* background-color: #3dbaab; */
+    margin: 0;
 }
 .post-title {
     font-size : 25px;
@@ -195,7 +285,7 @@ hr {
     cursor: pointer;
 }
 .post-count.active {
-    background-color: #ACA0EB;
+    background-color: #3dbaab;
 }
 .post-count span {
     margin: 3px;
@@ -224,7 +314,7 @@ hr {
 }
 .comment-create-btn {
     color: #fefefe;
-    background-color: #ACA0EB;
+    background-color: #8dcbc4;
     border: none;
     border-radius: 20px;
     width: 130px;
@@ -236,7 +326,7 @@ hr {
     align-self: flex-end;
 }
 .comment-create-btn.active {
-    background-color: #7F6AEE;
+    background-color: #3dbaab;
 }
 .comments {
     width: 520px;
@@ -328,7 +418,7 @@ hr {
     color: white;
 }
 .post-delete-confirm-btn {
-    background-color: #C4A5FA;
+    background-color: #3dbaab;
 }
 .comment-delete-modal {
     display: flex;
@@ -340,5 +430,5 @@ hr {
     padding: 15px 10px;
 }
 .comment-delete-confirm-btn {
-    background-color: #C4A5FA;
+    background-color: #3dbaab;
 }

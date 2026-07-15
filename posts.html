@@ -12,13 +12,16 @@
             <a href="posts.html" class="home-link">
                 <h1>아무 말 대잔치</h1>
             </a>
-            <button class="user-info-btn header-profile-circle">
-                <img class="profile-image header-profile-image" alt="프로필사진">
-            </button>
-            <div class="profile-dropdown">
-                <a class="profile-dropdown-menu" href="user-update.html">회원정보수정</a>
-                <a class="profile-dropdown-menu" href="password-update.html">비밀번호 수정</a>
-                <button class="profile-dropdown-menu logout-btn">로그아웃</button>
+            <div class="profile-menu">
+                <button class="user-info-btn header-profile-circle">
+                    <img class="profile-image header-profile-image" alt="프로필사진">
+                </button>
+                <div class="profile-dropdown">
+                    <a class="profile-dropdown-menu" href="user-update.html">회원정보수정</a>
+                    <a class="profile-dropdown-menu" href="password-update.html">비밀번호 수정</a>
+                    <a class="profile-dropdown-menu" href="my-post.html">나의 기록</a>
+                    <button class="profile-dropdown-menu logout-btn">로그아웃</button>
+                </div>
             </div>
         </div>
         <hr class="main-hr">
@@ -26,12 +29,40 @@
             <p class="intro-text">안녕하세요,<br>
                 아무 말 대잔치 <b>게시판</b>입니다.
             </p>
+            <div class="area-filter-wrap">
+                <p>지역별 태그</p>
+                <div class="area-filter">
+                        <button class="area-filter-btn" data-area="SEOUL">#서울</button>
+                        <button class="area-filter-btn" data-area="GYEONGGI">#경기</button>
+                        <button class="area-filter-btn" data-area="INCHEON">#인천</button>
+                        <button class="area-filter-btn" data-area="GANGWON">#강원</button>
+                        <button class="area-filter-btn" data-area="DAEJEON">#대전</button>
+                        <button class="area-filter-btn" data-area="SEJONG">#세종</button>
+                        <button class="area-filter-btn" data-area="CHUNGBUK">#충북</button>
+                        <button class="area-filter-btn" data-area="CHUNGNAM">#충남</button>
+                        <button class="area-filter-btn" data-area="DAEGU">#대구</button>
+                        <button class="area-filter-btn" data-area="GYEONGBUK">#경북</button>
+                        <button class="area-filter-btn" data-area="BUSAN">#부산</button>
+                        <button class="area-filter-btn" data-area="ULSAN">#울산</button>
+                        <button class="area-filter-btn" data-area="GYEONGNAM">#경남</button>
+                        <button class="area-filter-btn" data-area="GWANGJU">#광주</button>
+                        <button class="area-filter-btn" data-area="JEONBUK">#전북</button>
+                        <button class="area-filter-btn" data-area="JEONNAM">#전남</button>
+                        <button class="area-filter-btn" data-area="JEJU">#제주</button>
+                </div>
+            </div>
             <div class="detail-content">
-                <a class="post-create-btn" href="post-create.html">게시글 작성</a>
+                <a class="post-create-btn" href="post-create.html">여행 기록하기</a>
+                <select class="sort-select">
+                    <option value="latest-sort">최신순</option>
+                    <option value="like-sort">좋아요순</option>
+                    <option value="view-sort">조회수순</option>
+                </select>
                 <div class="post-list"></div>
             </div>
         </div>
     </div>
+    <script src="api.js"></script>
     <script src="posts.js"></script>
 </body>
 </html>

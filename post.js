@@ -72,6 +72,7 @@ if (logoutBtn) {
         localStorage.removeItem("email");
         localStorage.removeItem("nickname");
         localStorage.removeItem("profileImage");
+        localStorage.removeItem("accessToken");
 
         alert("로그아웃 되었습니다.");
         location.href = "login.html";
@@ -96,11 +97,16 @@ if (postDeleteCancelBtn) {
 if (postDeleteConfirmBtn) {
     postDeleteConfirmBtn.addEventListener("click", async function () {
         try {
-            const response = await fetch(`http://localhost:8080/posts/${postId}`, {
+            const response = await apiFetch(`/posts/${postId}`, {
                 method: "DELETE"
             });
 
             if (!response.ok) {
+                const errorText = await response.text();
+
+                console.error("게시글 삭제 실패 상태:", response.status);
+                console.error("게시글 삭제 실패 응답:", errorText);
+
                 alert("게시글 삭제에 실패했습니다.");
                 return;
             }
@@ -109,6 +115,7 @@ if (postDeleteConfirmBtn) {
             location.href = "posts.html";
 
         } catch (error) {
+            console.error("게시글 삭제 요청 실패:", error);
             alert("서버와 연결할 수 없습니다.");
         }
     });
@@ -125,13 +132,13 @@ likedCountBtn.addEventListener("click", async function () {
         let response;
 
         if (likedCountBtn.classList.contains("active")) {
-            response = await fetch(`http://localhost:8080/posts/${postId}/unlike?userId=${loginUserId}`, {
-                method: "PATCH"
+            response = await apiFetch(`/posts/${postId}/unlike?userId=${loginUserId}`, {
+            method: "PATCH"
             });
         } else {
-            response = await fetch(`http://localhost:8080/posts/${postId}/like?userId=${loginUserId}`, {
-                method: "PATCH"
-            });
+            response = await apiFetch(`/posts/${postId}/like?userId=${loginUserId}`, {
+            method: "PATCH"
+        });
         }
 
         if (!response.ok) {
@@ -154,6 +161,30 @@ likedCountBtn.addEventListener("click", async function () {
     }
 });
 
+function getAreaLabel(area) {
+    const areaLabels = {
+        SEOUL: "서울",
+        GYEONGGI: "경기",
+        INCHEON: "인천",
+        GANGWON: "강원",
+        DAEJEON: "대전",
+        SEJONG: "세종",
+        CHUNGBUK: "충북",
+        CHUNGNAM: "충남",
+        DAEGU: "대구",
+        GYEONGBUK: "경북",
+        BUSAN: "부산",
+        ULSAN: "울산",
+        GYEONGNAM: "경남",
+        GWANGJU: "광주",
+        JEONBUK: "전북",
+        JEONNAM: "전남",
+        JEJU: "제주"
+    };
+
+    return areaLabels[area] ?? "지역 없음";
+}
+
 async function loadPostDetail() {
     if (postId === null) {
         alert("잘못된 접근입니다.");
@@ -168,8 +199,7 @@ async function loadPostDetail() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/posts/${postId}?userId=${loginUserId}`);
-
+        const response = await apiFetch(`/posts/${postId}?userId=${loginUserId}`);
         if (!response.ok) {
             alert("게시글을 불러오지 못했습니다.");
             location.href = "posts.html";
@@ -178,7 +208,10 @@ async function loadPostDetail() {
 
         const post = await response.json();
 
-        postTitle.textContent = post.title;
+        postTitle.innerHTML = `
+            <span class="post-area">#${getAreaLabel(post.area)}</span>
+            ${post.title}
+        `;
         postWriter.textContent = post.writer;
         postCreateDate.textContent = post.postCreatedAt;
         postContent.textContent = post.content;
@@ -200,8 +233,20 @@ async function loadPostDetail() {
             postActions.style.display = "none";
         }
         if (post.postImage) {
-            postImage.src = post.postImage;
-            postImage.style.display = "block";
+            const imageUrl = post.postImage.replace("http://localhost:8080", "");
+
+            const imageResponse = await apiFetch(imageUrl);
+
+            if (imageResponse.ok) {
+                const imageBlob = await imageResponse.blob();
+                const objectUrl = URL.createObjectURL(imageBlob);
+
+                postImage.src = objectUrl;
+                postImage.style.display = "block";
+            } else {
+                postImage.removeAttribute("src");
+                postImage.style.display = "none";
+            }
         } else {
             postImage.removeAttribute("src");
             postImage.style.display = "none";
@@ -253,7 +298,7 @@ async function loadComments() {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/posts/${postId}/comments`);
+        const response = await apiFetch(`/posts/${postId}/comments`);
 
         if (!response.ok) {
             alert("댓글을 불러오지 못했습니다.");
@@ -312,9 +357,9 @@ if (commentDeleteConfirmBtn) {
         }
 
         try {
-            const response = await fetch(`http://localhost:8080/posts/${postId}/comments/${deletingCommentId}`, {
-                method: "DELETE"
-            });
+            const response = await apiFetch(
+                `/posts/${postId}/comments/${deletingCommentId}`, { method: "DELETE" }
+            );
 
             if (!response.ok) {
                 alert("댓글 삭제에 실패했습니다.");
@@ -350,7 +395,7 @@ commentCreateBtn.addEventListener("click", async function () {
         let response;
 
         if (editingCommentId !== null) {
-            response = await fetch(`http://localhost:8080/posts/${postId}/comments/${editingCommentId}`, {
+            response = await apiFetch(`/posts/${postId}/comments/${editingCommentId}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -360,7 +405,7 @@ commentCreateBtn.addEventListener("click", async function () {
                 })
             });
         } else {
-            response = await fetch(`http://localhost:8080/posts/${postId}/comments`, {
+            response = await apiFetch(`/posts/${postId}/comments`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"

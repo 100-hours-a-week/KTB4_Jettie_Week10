@@ -21,6 +21,7 @@ body {
 }
 .back-btn {
     background-color: #F4F5F7;
+    color: #3dbaab;
     border : 0;
     font-size: 30px;
     position: absolute;
@@ -41,7 +42,7 @@ body {
     height: 20px;
     margin: 0;
     border:none;
-    border-top: 2px black solid;
+    border-top: 2px#8dcbc4 dashed;
 }
 hr {
     width: 100%;
@@ -110,7 +111,7 @@ hr {
 }
 .signup-btn {
     color: #fefefe;
-    background-color: #ACA0EB;
+    background-color: #8dcbc4;
     border: none;
     border-radius: 5px;
     width: 300px;
@@ -121,7 +122,7 @@ hr {
     cursor: pointer;
 }
 .signup-btn.active {
-    background-color: #7F6AEE;
+    background-color: #3dbaab;
 }
 .login-link {
     font-size: 13px;

@@ -13,18 +13,19 @@
             <a href="posts.html" class="home-link">
                 <h1>아무 말 대잔치</h1>
             </a>
-            <button class="user-info-btn header-profile-circle">
-                <img class="profile-image header-profile-image" alt="프로필사진">
-            </button>
-            <div class="profile-dropdown">
-                <a class="profile-dropdown-menu" href="user-update.html">회원정보수정</a>
-                <a class="profile-dropdown-menu" href="password-update.html">비밀번호 수정</a>
-                <button class="profile-dropdown-menu">로그아웃</button>
+            <div class="profile-menu">
+                <button class="user-info-btn header-profile-circle">
+                    <img class="profile-image header-profile-image" alt="프로필사진">
+                </button>
+                <div class="profile-dropdown">
+                    <a class="profile-dropdown-menu" href="user-update.html">회원정보수정</a>
+                    <a class="profile-dropdown-menu" href="password-update.html">비밀번호 수정</a>
+                    <a class="profile-dropdown-menu" href="my-post.html">나의 기록</a>
+                    <button class="profile-dropdown-menu logout-btn">로그아웃</button>
+                </div>
             </div>
         </div>
-
         <hr class="main-hr">
-
         <div class="content-wrap">
             <h2>게시글 수정</h2>
 
@@ -49,22 +50,115 @@
                 </div>
                 <hr>
 
-                <span class="error-message" id="post-update-error"></span>
 
+                <div>
+                    <label class="area-select-label">지역*</label>
+
+                    <div class="area-select">
+                        <label class="area-option">
+                            <input type="radio" name="area" value="SEOUL">
+                            <span>#서울</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="GYEONGGI">
+                            <span>#경기</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="INCHEON">
+                            <span>#인천</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="GANGWON">
+                            <span>#강원</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="DAEJEON">
+                            <span>#대전</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="SEJONG">
+                            <span>#세종</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="CHUNGBUK">
+                            <span>#충북</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="CHUNGNAM">
+                            <span>#충남</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="DAEGU">
+                            <span>#대구</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="GYEONGBUK">
+                            <span>#경북</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="BUSAN">
+                            <span>#부산</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="ULSAN">
+                            <span>#울산</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="GYEONGNAM">
+                            <span>#경남</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="GWANGJU">
+                            <span>#광주</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="JEONBUK">
+                            <span>#전북</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="JEONNAM">
+                            <span>#전남</span>
+                        </label>
+
+                        <label class="area-option">
+                            <input type="radio" name="area" value="JEJU">
+                            <span>#제주</span>
+                        </label>
+                    </div>
+                </div>
+
+                <hr>
                 <div>
                     <label for="post-image">이미지</label>
-                    <input type="file" id="post-image" accept="image/*"/>
+                    <div>
+                        <label for="post-image"></label>
+                        <input type="file" id="post-image" accept="image/*"/>
+                    </div>
+                    <div>
+                        <img id="post-image-preview" alt="게시글 이미지 미리보기" style="display: none; max-width: 100%;">
+                    </div>
                 </div>
-
-                <div>
-                    <img id="post-image-preview" alt="게시글 이미지 미리보기" style="display: none; max-width: 100%;">
-                </div>
-
+                <span class="error-message" id="post-update-error"></span>
                 <button class="post-update-btn">수정하기</button>
             </div>
         </div>
     </div>
-
+    <script src="api.js"></script>
     <script src="post-update.js"></script>
 </body>
 </html>

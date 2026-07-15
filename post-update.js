@@ -14,6 +14,10 @@ const postUpdateBtn = document.querySelector(".post-update-btn");
 const postUpdateError = document.querySelector("#post-update-error");
 const headerProfileImage = document.querySelector(".header-profile-image");
 
+const areaInputs = document.querySelectorAll('input[name="area"]');
+
+let previewObjectUrl = null;
+
 setProfileImage(headerProfileImage, loginUserProfileImage);
 
 if (isLogin !== "true") {
@@ -26,14 +30,16 @@ backBtn.addEventListener("click", function () {
 });
 
 async function loadPostUpdateForm() {
-    if (postId === null) {
+    if (!postId) {
         alert("잘못된 접근입니다.");
         location.href = "posts.html";
         return;
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/posts/${postId}?userId=${loginUserId}`);
+        const response = await apiFetch(
+            `/posts/${postId}?userId=${loginUserId}`
+        );
 
         if (!response.ok) {
             alert("게시글을 불러오지 못했습니다.");
@@ -46,18 +52,65 @@ async function loadPostUpdateForm() {
         titleInput.value = post.title;
         contentInput.value = post.content;
 
-        if (post.postImage) {
-            postImagePreview.src = post.postImage;
-            postImagePreview.style.display = "block";
-        } else {
-            postImagePreview.removeAttribute("src");
-            postImagePreview.style.display = "none";
+        const savedAreaInput = document.querySelector(
+            `input[name="area"][value="${post.area}"]`
+        );
+
+        if (savedAreaInput) {
+            savedAreaInput.checked = true;
         }
 
-        checkPostUpdateForm();
+        await loadPostImagePreview(post.postImage);
 
+        checkPostUpdateForm();
     } catch (error) {
+        console.error("게시글 수정 화면 조회 실패:", error);
         alert("서버와 연결할 수 없습니다.");
+    }
+}
+
+async function loadPostImagePreview(imageUrl) {
+    if (!imageUrl) {
+        hidePostImagePreview();
+        return;
+    }
+
+    try {
+        const imagePath = imageUrl.startsWith("http://") ||
+            imageUrl.startsWith("https://")
+            ? new URL(imageUrl).pathname
+            : imageUrl;
+
+        const response = await apiFetch(imagePath);
+
+        if (!response.ok) {
+            throw new Error(`이미지 조회 실패: ${response.status}`);
+        }
+
+        const imageBlob = await response.blob();
+
+        clearPreviewObjectUrl();
+
+        previewObjectUrl = URL.createObjectURL(imageBlob);
+
+        postImagePreview.src = previewObjectUrl;
+        postImagePreview.style.display = "block";
+    } catch (error) {
+        console.error("기존 게시글 이미지 조회 실패:", error);
+        hidePostImagePreview();
+    }
+}
+
+function hidePostImagePreview() {
+    clearPreviewObjectUrl();
+    postImagePreview.removeAttribute("src");
+    postImagePreview.style.display = "none";
+}
+
+function clearPreviewObjectUrl() {
+    if (previewObjectUrl) {
+        URL.revokeObjectURL(previewObjectUrl);
+        previewObjectUrl = null;
     }
 }
 
@@ -75,6 +128,13 @@ contentInput.addEventListener("input", function () {
     checkPostUpdateForm();
 });
 
+areaInputs.forEach(function (areaInput) {
+    areaInput.addEventListener("change", function () {
+        postUpdateError.textContent = "";
+        checkPostUpdateForm();
+    });
+});
+
 postImageInput.addEventListener("change", function () {
     if (postImageInput.files.length === 0) {
         return;
@@ -88,13 +148,32 @@ postImageInput.addEventListener("change", function () {
         return;
     }
 
-    const previewUrl = URL.createObjectURL(file);
-    postImagePreview.src = previewUrl;
+    clearPreviewObjectUrl();
+
+    previewObjectUrl = URL.createObjectURL(file);
+
+    postImagePreview.src = previewObjectUrl;
     postImagePreview.style.display = "block";
 });
 
+function getSelectedArea() {
+    const selectedAreaInput = document.querySelector(
+        'input[name="area"]:checked'
+    );
+
+    if (!selectedAreaInput) {
+        return null;
+    }
+
+    return selectedAreaInput.value;
+}
+
 function checkPostUpdateForm() {
-    if (titleInput.value.trim() !== "" && contentInput.value.trim() !== "") {
+    const hasTitle = titleInput.value.trim() !== "";
+    const hasContent = contentInput.value.trim() !== "";
+    const hasArea = getSelectedArea() !== null;
+
+    if (hasTitle && hasContent && hasArea) {
         postUpdateBtn.classList.add("active");
     } else {
         postUpdateBtn.classList.remove("active");
@@ -102,22 +181,34 @@ function checkPostUpdateForm() {
 }
 
 postUpdateBtn.addEventListener("click", async function () {
-    if (titleInput.value.trim() === "" || contentInput.value.trim() === "") {
+    const title = titleInput.value.trim();
+    const content = contentInput.value.trim();
+    const area = getSelectedArea();
+
+    postUpdateError.textContent = "";
+
+    if (title === "" || content === "") {
         postUpdateError.textContent = "* 제목, 내용을 모두 작성해주세요.";
+        return;
+    }
+
+    if (!area) {
+        postUpdateError.textContent = "* 지역을 선택해주세요.";
         return;
     }
 
     const formData = new FormData();
 
-    formData.append("title", titleInput.value.trim());
-    formData.append("content", contentInput.value.trim());
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("area", area);
 
     if (postImageInput.files.length > 0) {
         formData.append("postImage", postImageInput.files[0]);
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/posts/${postId}`, {
+        const response = await apiFetch(`/posts/${postId}`, {
             method: "PATCH",
             body: formData
         });
@@ -129,16 +220,22 @@ postUpdateBtn.addEventListener("click", async function () {
         }
 
         location.href = `post.html?postId=${postId}`;
-
     } catch (error) {
+        console.error("게시글 수정 실패:", error);
         alert("서버와 연결할 수 없습니다.");
     }
 });
 
 function setProfileImage(imgElement, profileImage) {
-    if (!imgElement) return;
+    if (!imgElement) {
+        return;
+    }
 
-    if (profileImage && profileImage !== "null" && profileImage !== "undefined") {
+    if (
+        profileImage &&
+        profileImage !== "null" &&
+        profileImage !== "undefined"
+    ) {
         imgElement.src = profileImage;
         imgElement.style.display = "block";
     } else {
@@ -146,5 +243,9 @@ function setProfileImage(imgElement, profileImage) {
         imgElement.style.display = "none";
     }
 }
+
+window.addEventListener("beforeunload", function () {
+    clearPreviewObjectUrl();
+});
 
 loadPostUpdateForm();

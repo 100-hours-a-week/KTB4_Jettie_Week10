@@ -1,178 +1,306 @@
 html,
 body {
-  height: 100%;
-  margin: 0;
-  background-color: #F4F5F7;
+    height: 100%;
+    margin: 0;
+    background-color: #F4F5F7;
 }
+
 .posts-container {
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
 }
+
 .title {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 600px;
+
     position: relative;
+
+    width: 600px;
     height: 90px;
 }
+
 .title h1 {
     margin: 0;
 }
+
 .home-link {
-    text-decoration: none;
     color: inherit;
+    text-decoration: none;
 }
 
 .home-link h1 {
     margin: 0;
     cursor: pointer;
 }
-.profile-circle,
-.header-profile-circle {
+
+.profile-circle {
     width: 30px;
     height: 30px;
+
     border-radius: 50%;
     background-color: #d9d9d9;
     overflow: hidden;
     flex-shrink: 0;
 }
-.header-profile-circle {
+
+.profile-menu {
     position: absolute;
+    top: 30px;
     right: 20px;
+
+    width: 30px;
+    height: 55px;
+
+    z-index: 20;
+}
+
+.user-info-btn,
+.header-profile-circle {
+    position: static;
+
+    display: block;
 
     width: 30px;
     height: 30px;
 
-    border-radius: 50%;
-    overflow: hidden;
+    padding: 0;
 
     border: none;
+    border-radius: 50%;
     background-color: #d9d9d9;
+    overflow: hidden;
+
     cursor: pointer;
-    padding: 0;
 }
 
 .profile-image {
+    display: none;
+
     width: 100%;
     height: 100%;
+
     object-fit: cover;
-    display: none;
 }
-.user-info-btn {
-    position: absolute;
-    right: 20px;
-    cursor: pointer;
-    border: none;
-    padding: 0;
-}
+
 .profile-dropdown {
     position: absolute;
-    top: 65px;
-    right: 20px;
-
-    background-color: rgb(204, 204, 204);
-    padding: 15px;
-    border-radius: 5px;
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
 
     display: none;
-    z-index: 10;
     flex-direction: column;
-}
-.profile-dropdown-menu {
-    padding: 5px;
-    color: black;
-    background-color: rgb(204, 204, 204);
-    border: none;
-    font-size: 15px;
-    text-decoration: none;
-    cursor: pointer;
+    align-items: stretch;
 
+    width: 100px;
+    padding: 15px;
+
+    background-color:#ddecea;
+    border-radius: 5px;
+
+    z-index: 30;
 }
-.title:hover .profile-dropdown {
+
+/* 프로필 버튼 또는 드롭다운에 마우스가 있을 때 표시 */
+.profile-menu:hover .profile-dropdown {
     display: flex;
-    align-items: center;
 }
+
+/* 드롭다운 메뉴 항목 */
+.profile-dropdown-menu {
+    width: 100%;
+    padding: 5px;
+
+    box-sizing: border-box;
+
+    color: black;
+    background-color: transparent;
+    border: none;
+
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.profile-dropdown-menu:hover {
+    font-weight: bold;
+    background-color:#aedcd7;
+}
+
 .main-hr {
     width: 100%;
     height: 20px;
     margin: 0;
-    border:none;
-    border-top: 2px black solid;
+
+    border: none;
+    border-top: 2px dashed #8dcbc4;
 }
+
 hr {
     width: 100%;
     margin: 0;
 }
+
 .content {
     display: flex;
+    flex: 1;
     flex-direction: column;
     align-items: center;
-    flex: 1;
 }
+
 .intro-text {
     font-size: 30px;
     text-align: center;
 }
+
 .detail-content {
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 520px;
+}
+.area-filter-wrap {
+    background-color: rgb(255, 255, 255);
+    padding: 10px;
+    width: 600px;
+    border:#8dcbc4 solid 5px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.area-filter-wrap p {
+    font-size: 22px;
+    margin: 10px;
+    font-weight: bold;
+}
+.area-filter {
+    display: grid;
+    grid-template-columns: repeat(9, auto);
+    /* gap: 10px; */
+}
+.area-filter-btn {
+    padding: 8px 15px;
+    background-color: #FFFFFF;
+    border: none;
+    cursor: pointer;
+}
+.area-filter-btn:hover,
+.area-filter-btn.active {
+    color: #3dbaab;
+    font-weight: bold;
 }
 .post-create-btn {
-    color: #fefefe;
-    background-color: #ACA0EB;
-    border: none;
-    border-radius: 20px;
+    display: flex;
+    align-self: flex-end;
+    align-items: center;
+    justify-content: center;
+
     width: 130px;
     height: 35px;
+
     margin: 15px;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    align-self: flex-end; /* detail-content로부터 오른쪽으로 치우치게 */
     margin-right: 0;
     margin-bottom: 30px;
 
+    color: #fefefe;
+    background-color: #8dcbc4;
+    border: none;
+    border-radius: 20px;
+
+    font-size: 15px;
+    font-weight: bold;
     text-decoration: none;
+
+    cursor: pointer;
 }
+
 .post-create-btn:hover {
-    background-color: #7F6AEE;
+    background-color: #3dbaab;
+}
+.sort-select {
+    align-self: flex-end;
+    padding: 5px 10px;
+    margin-right: 5px;
+    border-radius: 20px;
+    border : #8dcbc4 solid 2px;
 }
 .post {
+    width: 250px;
+    cursor: pointer;
     background-color: #FFFFFF;
-    width: 600px;
     border-radius: 10px;
+}
+.post-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin: 15px;
 }
 
 .post-info {
     margin: 20px;
     padding-top: 10px;
 }
-.post-title {
+.post-area{
+    color:#3dbaab;
     font-size: 25px;
     font-weight: bold;
-    margin: 10px;
-    
+    padding: 5px 0;
 }
+.main-photo {
+    display: block;
+    width: 200px;
+    height: 250px;
+    margin: 15px auto;
+    border-radius: 5px;
+    object-fit: cover;
+    object-position: center;
+}
+.post-title {
+    margin: 10px auto;
+    font-size: 25px;
+    font-weight: bold;
+}
+
 .post-detail-info {
     display: flex;
     justify-content: space-between;
+
     margin: 10px;
 }
+.post-count {
+    margin-top: 5px;
+}
+.post-create-date {
+    display: block;
+    margin-top: 8px;
+}
+
 .post-creator-info {
-    margin: 20px;
     display: flex;
     align-items: center;
-    padding-bottom: 10px;
+
+    margin: 10px 20px;
 }
+
 .post-creator {
     margin: 10px;
+}
+.empty-message {
+    grid-column: 1 / -1;
+
+    width: 100%;
+    margin-top: 40px;
+
+    text-align: center;
+    color: #777777;
+    font-size: 18px;
 }

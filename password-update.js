@@ -42,6 +42,7 @@ if (logoutBtn) {
         localStorage.removeItem("email");
         localStorage.removeItem("nickname");
         localStorage.removeItem("profileImage");
+        localStorage.removeItem("accessToken");
 
         alert("로그아웃 되었습니다.");
         location.href = "login.html";
@@ -112,7 +113,7 @@ passwordUpdateBtn.addEventListener("click", async function () {
     }
 
     try {
-        const response = await fetch(`http://localhost:8080/users/${userId}/password`, {
+        const response = await apiFetch(`/users/${userId}/password`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
