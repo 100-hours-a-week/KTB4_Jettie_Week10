@@ -1,0 +1,61 @@
+import { Link, useNavigate } from "react-router-dom";
+import { clearLoginStorage } from "../utils/auth.js";
+
+export function ProfileImage({ src, className = "" }) {
+  if (!src || src === "null" || src === "undefined") return null;
+  return (
+    <img
+      className={`profile-image ${className}`}
+      src={src}
+      alt="프로필사진"
+      style={{ display: "block" }}
+    />
+  );
+}
+
+export default function PageHeader({ backTo, onBack, requireLogin = true }) {
+  const navigate = useNavigate();
+  const isLogin = localStorage.getItem("isLogin") === "true";
+
+  function logout() {
+    clearLoginStorage();
+    alert("로그아웃 되었습니다.");
+    navigate("/login");
+  }
+
+  return (
+    <>
+      <header className="title">
+        {backTo && (
+          <button
+            className="back-btn"
+            type="button"
+            onClick={onBack ?? (() => navigate(backTo))}
+          >
+            {"<"}
+          </button>
+        )}
+        <Link to="/posts" className="home-link"><h1>아무 말 대잔치</h1></Link>
+        {(!requireLogin || isLogin) && isLogin && (
+          <div className="profile-menu">
+            <button className="user-info-btn header-profile-circle" type="button">
+              <ProfileImage
+                src={localStorage.getItem("profileImage")}
+                className="header-profile-image"
+              />
+            </button>
+            <nav className="profile-dropdown">
+              <Link className="profile-dropdown-menu" to="/users/me">회원정보수정</Link>
+              <Link className="profile-dropdown-menu" to="/users/me/password">비밀번호 수정</Link>
+              <Link className="profile-dropdown-menu" to="/users/me/posts">나의 기록</Link>
+              <button className="profile-dropdown-menu logout-btn" type="button" onClick={logout}>
+                로그아웃
+              </button>
+            </nav>
+          </div>
+        )}
+      </header>
+      <hr className="main-hr" />
+    </>
+  );
+}

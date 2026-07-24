@@ -1,0 +1,470 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    background-color: #F4F5F7;
+}
+
+.posts-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    position: relative;
+
+    width: 600px;
+    height: 90px;
+}
+
+.title h1 {
+    margin: 0;
+}
+
+.home-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.home-link h1 {
+    margin: 0;
+    cursor: pointer;
+}
+
+.profile-circle {
+    width: 30px;
+    height: 30px;
+
+    border-radius: 50%;
+    background-color: #d9d9d9;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+.profile-menu {
+    position: absolute;
+    top: 30px;
+    right: 20px;
+
+    width: 30px;
+    height: 55px;
+
+    z-index: 20;
+}
+
+.user-info-btn,
+.header-profile-circle {
+    position: static;
+
+    display: block;
+
+    width: 30px;
+    height: 30px;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+    overflow: hidden;
+
+    cursor: pointer;
+}
+
+.profile-image {
+    display: none;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 35px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+
+    width: 100px;
+    padding: 15px;
+
+    background-color:#ddecea;
+    border-radius: 5px;
+
+    z-index: 30;
+}
+
+/* 프로필 버튼 또는 드롭다운에 마우스가 있을 때 표시 */
+.profile-menu:hover .profile-dropdown {
+    display: flex;
+}
+
+/* 드롭다운 메뉴 항목 */
+.profile-dropdown-menu {
+    width: 100%;
+    padding: 5px;
+
+    box-sizing: border-box;
+
+    color: black;
+    background-color: transparent;
+    border: none;
+
+    font-size: 15px;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+.profile-dropdown-menu:hover {
+    font-weight: bold;
+    background-color:#aedcd7;
+}
+
+.main-hr {
+    width: 100%;
+    height: 20px;
+    margin: 0;
+
+    border: none;
+    border-top: 2px dashed #8dcbc4;
+}
+
+hr {
+    width: 100%;
+    margin: 0;
+}
+
+.content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+}
+
+.intro-text {
+    font-size: 30px;
+    text-align: center;
+}
+
+.detail-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 760px;
+}
+.area-filter-wrap {
+    background-color: rgb(255, 255, 255);
+    padding: 10px;
+    width: 600px;
+    border:#8dcbc4 solid 5px;
+    border-radius: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.area-filter-wrap p {
+    font-size: 22px;
+    margin: 10px;
+    font-weight: bold;
+}
+.area-filter {
+    display: grid;
+    grid-template-columns: repeat(9, auto);
+    /* gap: 10px; */
+}
+.area-filter-btn {
+    padding: 8px 15px;
+    background-color: #FFFFFF;
+    border: none;
+    cursor: pointer;
+}
+.area-filter-btn:hover,
+.area-filter-btn.active {
+    color: #3dbaab;
+    font-weight: bold;
+}
+.post-create-btn {
+    display: flex;
+    align-self: flex-end;
+    align-items: center;
+    justify-content: center;
+
+    width: 110px;
+    height: 35px;
+
+    margin: 15px;
+    margin-right: 0;
+    margin-bottom: 30px;
+
+    color: #fefefe;
+    background-color: #8dcbc4;
+    border: none;
+    border-radius: 20px;
+
+    font-size: 15px;
+    font-weight: bold;
+    text-decoration: none;
+
+    cursor: pointer;
+}
+
+.post-create-btn:hover {
+    background-color: #3dbaab;
+}
+.sort-select {
+    align-self: flex-end;
+    padding: 5px 10px;
+    margin-right: 5px;
+    border-radius: 20px;
+    border : #8dcbc4 solid 2px;
+}
+.post {
+    width: 100%;
+    cursor: pointer;
+    background-color: #FFFFFF;
+    border-radius: 10px;
+}
+.post-list {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 16px;
+    width: 100%;
+    margin: 15px 0;
+}
+
+.post-info {
+    display: grid;
+    grid-template-columns: 90px 160px minmax(0, 1fr) 190px;
+    align-items: center;
+    gap: 20px;
+    min-height: 130px;
+    margin: 0;
+    padding: 18px 24px;
+}
+.post-area{
+    color:#3dbaab;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 0;
+    white-space: nowrap;
+}
+.posts-container .post-area::after {
+    content: none;
+}
+.post-thumbnail {
+    width: 160px;
+    height: 110px;
+    border-radius: 8px;
+    background-color: #edf1f2;
+    overflow: hidden;
+}
+.main-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 8px;
+    object-fit: cover;
+    object-position: center;
+}
+.post-title {
+    min-width: 0;
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.post-detail-info {
+    display: flex;
+    justify-content: space-between;
+
+    margin: 10px;
+}
+.post-count {
+    gap: 12px;
+    margin: 0;
+    font-size: 14px;
+    white-space: nowrap;
+}
+
+.post-creator-info {
+    display: flex;
+    align-items: center;
+
+    margin: 10px 20px;
+}
+
+.post-creator {
+    margin: 10px;
+}
+.empty-message {
+    grid-column: 1 / -1;
+
+    width: 100%;
+    margin-top: 40px;
+
+    text-align: center;
+    color: #777777;
+    font-size: 18px;
+}
+
+/*
+ * 다른 페이지의 전역 CSS가 라우터 번들에 함께 포함되어도
+ * 게시글 목록 레이아웃이 덮어써지지 않도록 PostsPage 범위를 명시한다.
+ */
+body .posts-container .detail-content {
+    width: min(520px, calc(100vw - 40px));
+    align-items: stretch;
+}
+
+body .posts-container .post-create-btn {
+    align-self: flex-end;
+    width: 110px;
+    margin-right: 0;
+}
+
+body .posts-container .sort-select {
+    align-self: flex-end;
+}
+
+body .posts-container .post-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+    gap: 20px;
+    margin: 15px 0;
+}
+
+body .posts-container .post-list > .post {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
+    margin: 0;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+body .posts-container .post-list > .post > .post-info {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
+    min-height: 0;
+    margin: 0;
+    padding: 16px 14px 12px;
+    box-sizing: border-box;
+}
+
+body .posts-container .post-list .post-area {
+    align-self: flex-start;
+    margin: 3px 0 7px 0;
+    padding: 0;
+    font-size: 23px;
+    white-space: nowrap;
+}
+
+body .posts-container .post-list .post-area::after {
+    content: none;
+}
+
+body .posts-container .post-list .post-thumbnail {
+    display: block;
+    width: 100%;
+    height: 250px;
+    background-color: #edf1f2;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+body .posts-container .post-list .post-thumbnail > .main-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 4px;
+    object-fit: cover;
+}
+
+body .posts-container .post-list .post-title {
+    min-width: 0;
+    margin: 10px 0;
+    font-size: 20px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body .posts-container .post-list .post-count {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 2px 0 0;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: left;
+    white-space: nowrap;
+}
+
+body .posts-container .post-list .post-create-date {
+    display: block;
+    align-self: flex-start;
+    width: 100%;
+    margin: 2px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-align: left;
+    white-space: nowrap;
+}
+
+body .posts-container .post-list > .post > hr {
+    width: 100%;
+    border: 0;
+    border-top: 1px solid #dddddd;
+}
+
+body .posts-container .post-list .post-creator-info {
+    display: flex;
+    align-items: center;
+    min-height: 48px;
+    margin: 0;
+    padding: 7px 14px;
+    box-sizing: border-box;
+}
+
+body .posts-container .post-list .post-creator {
+    margin: 0 0 0 8px;
+    font-size: 12px;
+}
+
+@media (max-width: 560px) {
+    body .posts-container .post-list {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
