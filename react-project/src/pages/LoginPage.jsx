@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import useAuth from "../hooks/useAuth.js";
 import "./LoginPage.css";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -8,6 +9,7 @@ const PASSWORD_PATTERN = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,20}
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -98,12 +100,13 @@ function LoginPage() {
         return;
       }
 
-      localStorage.setItem("accessToken", accessToken);
-      localStorage.setItem("isLogin", "true");
-      localStorage.setItem("userId", String(result.userId ?? ""));
-      localStorage.setItem("email", result.email ?? "");
-      localStorage.setItem("nickname", result.nickname ?? "");
-      localStorage.setItem("profileImage", result.profileImage ?? "");
+      login({
+        accessToken,
+        userId: result.userId,
+        email: result.email,
+        nickname: result.nickname,
+        profileImage: result.profileImage,
+      });
 
       alert("로그인 성공!");
 

@@ -2,12 +2,18 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../api/api.js";
 import PageHeader, { ProfileImage } from "../components/PageHeader.jsx";
-import { clearLoginStorage } from "../utils/auth.js";
+import useAuth from "../hooks/useAuth.js";
 import "./UserUpdatePage.css";
 
 function UserUpdatePage() {
   const navigate = useNavigate();
-  const userId = localStorage.getItem("userId");
+  const {
+    userId,
+    updateAuth,
+    previewProfileImage,
+    refreshAuth,
+    logout,
+  } = useAuth();
   const [email, setEmail] = useState("");
   const [nickname, setNickname] = useState("");
   const [originalNickname, setOriginalNickname] = useState("");
@@ -24,13 +30,20 @@ function UserUpdatePage() {
       const user = await response.json();
       setEmail(user.email); setNickname(user.nickname); setOriginalNickname(user.nickname);
       setProfile(user.profileImage || "");
-      localStorage.setItem("profileImage", user.profileImage || "");
+      updateAuth({
+        email: user.email,
+        nickname: user.nickname,
+        profileImage: user.profileImage || "",
+      });
     }).catch(() => alert("회원 정보를 불러오지 못했습니다."));
-  }, [userId]);
+  }, [updateAuth, userId]);
 
   useEffect(() => () => {
-    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-  }, []);
+    if (previewUrlRef.current) {
+      refreshAuth();
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
+  }, [refreshAuth]);
 
   function chooseImage(event) {
     const file = event.target.files?.[0];
@@ -43,6 +56,7 @@ function UserUpdatePage() {
     previewUrlRef.current = previewUrl;
     setProfileFile(file);
     setProfile(previewUrl);
+    previewProfileImage(previewUrl);
   }
 
   const trimmed = nickname.trim();
@@ -71,8 +85,12 @@ function UserUpdatePage() {
         previewUrlRef.current = "";
       }
       setNickname(user.nickname); setOriginalNickname(user.nickname); setProfile(user.profileImage || "");
-      setProfileFile(null); localStorage.setItem("nickname", user.nickname);
-      localStorage.setItem("profileImage", user.profileImage || "");
+      setProfileFile(null);
+      updateAuth({
+        email: user.email,
+        nickname: user.nickname,
+        profileImage: user.profileImage || "",
+      });
       setComplete(true); window.setTimeout(() => setComplete(false), 2000);
     } catch { alert("서버와 연결할 수 없습니다."); }
   }
@@ -81,7 +99,7 @@ function UserUpdatePage() {
     try {
       const response = await apiFetch(`/users/${userId}`, { method: "DELETE" });
       if (!response.ok) return alert("회원 탈퇴에 실패했습니다.");
-      clearLoginStorage(); alert("회원 탈퇴가 완료되었습니다."); navigate("/login");
+      logout(); alert("회원 탈퇴가 완료되었습니다."); navigate("/login");
     } catch { alert("서버와 연결할 수 없습니다."); }
   }
 

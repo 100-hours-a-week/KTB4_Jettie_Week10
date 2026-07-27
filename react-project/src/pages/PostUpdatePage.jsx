@@ -34,7 +34,7 @@ function PostUpdatePage() {
     let cancelled = false;
     async function load() {
       try {
-        const response = await apiFetch(`/posts/${postId}?userId=${localStorage.getItem("userId")}`);
+        const response = await apiFetch(`/posts/${postId}`);
         if (!response.ok) throw new Error();
         const post = await response.json();
         setTitle(post.title);
@@ -42,13 +42,38 @@ function PostUpdatePage() {
         setArea(post.area);
         const storedImages = post.postImages?.length
           ? [...post.postImages].sort((a, b) => a.imageOrder - b.imageOrder)
-          : [];
-        const loadedImages = await Promise.all(storedImages.map(async (storedImage) => {
-          const response = await apiFetch(storedImage.imageUrl.replace("http://localhost:8080", ""));
+          : [{ imageUrl: post.representativeImage ?? post.postImage }]
+              .filter((image) => image.imageUrl);
+
+        const loadedImages = await Promise.all(storedImages.map(async (storedImage, index) => {
+          const imagePath = storedImage.imageUrl.replace("http://localhost:8080", "");
+          const response = await apiFetch(imagePath);
           if (!response.ok) return null;
-          const previewUrl = URL.createObjectURL(await response.blob());
+
+          const imageBlob = await response.blob();
+          const previewUrl = URL.createObjectURL(imageBlob);
           objectUrls.push(previewUrl);
-          return { key: `existing-${storedImage.imageId}`, type: "existing", imageId: storedImage.imageId, previewUrl };
+
+          if (storedImage.imageId == null) {
+            const filename = imagePath.split("/").pop() || `legacy-post-image-${index + 1}`;
+            const file = new File([imageBlob], filename, {
+              type: imageBlob.type || "image/jpeg",
+            });
+
+            return {
+              key: `legacy-${index}`,
+              type: "new",
+              file,
+              previewUrl,
+            };
+          }
+
+          return {
+            key: `existing-${storedImage.imageId}`,
+            type: "existing",
+            imageId: storedImage.imageId,
+            previewUrl,
+          };
         }));
         if (!cancelled) {
           const validImages = loadedImages.filter(Boolean);

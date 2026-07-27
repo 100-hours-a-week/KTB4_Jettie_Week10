@@ -1,3 +1,5 @@
+import { clearLoginStorage } from "../utils/auth.js";
+
 const API_BASE_URL = "http://localhost:8080";
 
 export async function apiFetch(url, options = {}) {
@@ -46,12 +48,7 @@ export async function apiFetch(url, options = {}) {
     );
 
     if (response.status === 401) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("isLogin");
-        localStorage.removeItem("userId");
-        localStorage.removeItem("email");
-        localStorage.removeItem("nickname");
-        localStorage.removeItem("profileImage");
+        clearLoginStorage();
 
         alert("로그인이 필요합니다.");
 

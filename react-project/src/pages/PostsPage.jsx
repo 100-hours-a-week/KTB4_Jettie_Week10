@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiFetch } from "../api/api.js";
+import useAuth from "../hooks/useAuth.js";
 import "./PostsPage.css";
 
 const PAGE_SIZE = 10;
@@ -214,12 +215,11 @@ function PostCard({ post, onClick }) {
 
 function PostsPage() {
   const navigate = useNavigate();
-
-  const isLogin =
-    localStorage.getItem("isLogin") === "true";
-
-  const loginUserProfileImage =
-    localStorage.getItem("profileImage");
+  const {
+    authenticated,
+    profileImage: loginUserProfileImage,
+    logout,
+  } = useAuth();
 
   const [posts, setPosts] = useState([]);
   const [selectedArea, setSelectedArea] = useState(null);
@@ -227,28 +227,14 @@ function PostsPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
 
-  /*
-   * page, isLoading, hasNext를 일반 State만으로 처리하면
-   * scroll 이벤트 안에서 이전 값을 참조할 수 있어서 Ref도 함께 사용한다.
-   */
   const pageRef = useRef(0);
   const isLoadingRef = useRef(false);
   const hasNextRef = useRef(true);
 
-  /*
-  * 목록 조회 조건이 변경될 때마다 번호를 증가시켜
-  * 이전 요청의 응답을 무시하기 위한 Ref
-  */
   const requestVersionRef = useRef(0);
 
   function handleLogout() {
-    localStorage.removeItem("isLogin");
-    localStorage.removeItem("userId");
-    localStorage.removeItem("email");
-    localStorage.removeItem("nickname");
-    localStorage.removeItem("profileImage");
-    localStorage.removeItem("accessToken");
-
+    logout();
     alert("로그아웃 되었습니다.");
     navigate("/login");
   }
@@ -256,7 +242,7 @@ function PostsPage() {
   function handlePostCreateClick(event) {
     event.preventDefault();
 
-    if (!isLogin) {
+    if (!authenticated) {
       alert("로그인이 필요합니다.");
       navigate("/login");
       return;
@@ -284,12 +270,6 @@ function PostsPage() {
       return;
     }
 
-    /*
-     * 요청을 시작할 당시의 페이지 번호를 따로 저장한다.
-     *
-     * 응답을 기다리는 사이 pageRef.current가 변경될 수 있으므로
-     * 응답 시점의 pageRef.current를 사용하면 안 된다.
-     */
     const requestedPage = pageRef.current;
 
     isLoadingRef.current = true;
@@ -316,11 +296,6 @@ function PostsPage() {
 
       const data = await response.json();
       const loadedPosts = data.content ?? [];
-
-      /*
-       * 요청 도중 지역이 변경되거나 새로운 목록 요청이 시작됐다면
-       * 이전 요청의 응답은 화면에 반영하지 않는다.
-       */
       if (
         requestVersion !== requestVersionRef.current
       ) {
@@ -328,25 +303,14 @@ function PostsPage() {
       }
 
       setPosts((currentPosts) => {
-        /*
-         * 첫 페이지는 기존 목록에 추가하지 않고 교체한다.
-         */
         if (requestedPage === 0) {
           return loadedPosts;
         }
-
-        /*
-         * 다음 페이지는 기존 목록 뒤에 추가한다.
-         */
         const mergedPosts = [
           ...currentPosts,
           ...loadedPosts,
         ];
 
-        /*
-         * 혹시 같은 페이지가 중복 요청되더라도
-         * postId가 같은 게시글은 하나만 남긴다.
-         */
         return Array.from(
           new Map(
             mergedPosts.map((post) => [
@@ -359,16 +323,9 @@ function PostsPage() {
 
       hasNextRef.current = !data.last;
 
-      /*
-       * 응답을 받은 시점의 현재 값에 1을 더하는 것이 아니라,
-       * 실제로 요청했던 페이지의 다음 번호를 저장한다.
-       */
       pageRef.current = requestedPage + 1;
     } catch (error) {
-      /*
-       * 이미 새로운 목록 요청이 시작된 후라면
-       * 이전 요청의 오류도 화면에 표시하지 않는다.
-       */
+
       if (
         requestVersion !== requestVersionRef.current
       ) {
@@ -384,9 +341,7 @@ function PostsPage() {
         "게시글 목록을 표시하는 중 오류가 발생했습니다.",
       );
     } finally {
-      /*
-       * 현재 유효한 요청일 때만 로딩 상태를 해제한다.
-       */
+
       if (
         requestVersion === requestVersionRef.current
       ) {
@@ -399,10 +354,7 @@ function PostsPage() {
 );
 
   useEffect(() => {
-    /*
-    * 목록 조건이 변경될 때마다 요청 버전을 증가시킨다.
-    * 이전 버전으로 시작한 요청의 응답은 무시된다.
-    */
+
     requestVersionRef.current += 1;
 
     const currentRequestVersion =
@@ -451,7 +403,7 @@ function PostsPage() {
           <h1>아무 말 대잔치</h1>
         </Link>
 
-        {isLogin && (
+        {authenticated && (
           <div className="profile-menu">
             <button
               type="button"

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../api/api.js";
 import PageHeader, { ProfileImage } from "../components/PageHeader.jsx";
+import useAuth from "../hooks/useAuth.js";
 import "./PostPage.css";
 
 const AREA = { SEOUL:"서울", GYEONGGI:"경기", INCHEON:"인천", GANGWON:"강원", DAEJEON:"대전", SEJONG:"세종", CHUNGBUK:"충북", CHUNGNAM:"충남", DAEGU:"대구", GYEONGBUK:"경북", BUSAN:"부산", ULSAN:"울산", GYEONGNAM:"경남", GWANGJU:"광주", JEONBUK:"전북", JEONNAM:"전남", JEJU:"제주" };
@@ -24,7 +25,10 @@ function ConfirmModal({ open, title, onCancel, onConfirm }) {
 function PostPage() {
   const { postId } = useParams();
   const navigate = useNavigate();
-  const userId = Number(localStorage.getItem("userId"));
+  const {
+    authenticated,
+    userId,
+  } = useAuth();
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [imageUrls, setImageUrls] = useState([]);
@@ -33,6 +37,16 @@ function PostPage() {
   const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
   const [deletePostOpen, setDeletePostOpen] = useState(false);
+
+  function requireLogin() {
+    if (authenticated) return true;
+
+    alert("로그인이 필요합니다.");
+    navigate("/login", {
+      state: { from: `/posts/${postId}` },
+    });
+    return false;
+  }
 
   function handleBack() {
     if ((window.history.state?.idx ?? 0) > 0) {
@@ -56,7 +70,7 @@ function PostPage() {
     let cancelled = false;
     async function load() {
       try {
-        const response = await apiFetch(`/posts/${postId}?userId=${userId}`);
+        const response = await apiFetch(`/posts/${postId}`);
         if (!response.ok) throw new Error();
         const value = await response.json();
         if (cancelled) return;
@@ -89,20 +103,23 @@ function PostPage() {
   }, [loadComments, navigate, postId, userId]);
 
   async function toggleLike() {
-    if (localStorage.getItem("isLogin") !== "true") return navigate("/login");
+    if (!requireLogin()) return;
+
     const action = post.likedByMe ? "unlike" : "like";
     try {
-      const response = await apiFetch(`/posts/${postId}/${action}?userId=${userId}`, { method: "PATCH" });
+      const response = await apiFetch(`/posts/${postId}/${action}`, { method: "PATCH" });
       if (!response.ok) return alert("좋아요 처리에 실패했습니다.");
       setPost(await response.json());
     } catch { alert("서버와 연결할 수 없습니다."); }
   }
 
   async function saveComment() {
+    if (!requireLogin()) return;
+
     const value = comment.trim();
     if (!value) return;
     const url = editingId ? `/posts/${postId}/comments/${editingId}` : `/posts/${postId}/comments`;
-    const body = editingId ? { commentContent: value } : { userId, commentContent: value };
+    const body = { commentContent: value };
     try {
       const response = await apiFetch(url, { method: editingId ? "PATCH" : "POST", body: JSON.stringify(body) });
       if (!response.ok) return alert("댓글 처리에 실패했습니다.");

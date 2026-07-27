@@ -53,7 +53,7 @@ function PasswordUpdatePage() {
     event.preventDefault();
     if (!validateAll()) return;
     try {
-      const response = await apiFetch(`/users/${localStorage.getItem("userId")}/password`, {
+      const response = await apiFetch("/users/me/password", {
         method: "PATCH",
         body: JSON.stringify({ currentPassword, password, passwordCheck }),
       });
@@ -96,8 +96,8 @@ function PasswordUpdatePage() {
             <div className="error-message">{errors.password}</div>
           </div>
           <div className="input-container">
-            <label htmlFor="password-check">새 비밀번호 확인*</label>
-            <input type="password" id="password-check" className="input" value={passwordCheck} placeholder="새 비밀번호를 한 번 더 입력하세요." onChange={(e) => { setPasswordCheck(e.target.value); setErrors({ ...errors, passwordCheck: "" }); }} onBlur={() => validate("passwordCheck")} />
+            <label htmlFor="new-password-check">새 비밀번호 확인*</label>
+            <input type="password" id="new-password-check" className="input" value={passwordCheck} placeholder="새 비밀번호를 한 번 더 입력하세요." onChange={(e) => { setPasswordCheck(e.target.value); setErrors({ ...errors, passwordCheck: "" }); }} onBlur={() => validate("passwordCheck")} />
             <div className="error-message">{errors.passwordCheck}</div>
           </div>
           <button

@@ -6,6 +6,7 @@ import "./MyPostPage.css";
 
 const AREA = { SEOUL:"서울", GYEONGGI:"경기", INCHEON:"인천", GANGWON:"강원", DAEJEON:"대전", SEJONG:"세종", CHUNGBUK:"충북", CHUNGNAM:"충남", DAEGU:"대구", GYEONGBUK:"경북", BUSAN:"부산", ULSAN:"울산", GYEONGNAM:"경남", GWANGJU:"광주", JEONBUK:"전북", JEONNAM:"전남", JEJU:"제주" };
 const formatCount = (value) => value >= 1000 ? `${Math.floor(value / 1000)}k` : (value ?? 0);
+const PAGE_SIZE = 10;
 
 function Thumbnail({ path }) {
   const [src, setSrc] = useState("");
@@ -34,26 +35,73 @@ function MyPostPage() {
   const [posts, setPosts] = useState([]);
   const [sort, setSort] = useState("latest-sort");
   const [loading, setLoading] = useState(false);
-  const page = useRef(0);
-  const hasNext = useRef(true);
+  const pageRef = useRef(0);
+  const isLoadingRef = useRef(false);
+  const hasNextRef = useRef(true);
+  const requestVersionRef = useRef(0);
 
-  const loadPosts = useCallback(async (reset = false) => {
-    if (loading || (!reset && !hasNext.current)) return;
+  const loadPosts = useCallback(async (
+    requestVersion = requestVersionRef.current
+  ) => {
+    if (isLoadingRef.current || !hasNextRef.current) return;
+
+    const requestedPage = pageRef.current;
+
+    isLoadingRef.current = true;
     setLoading(true);
-    const nextPage = reset ? 0 : page.current;
-    try {
-      const userId = localStorage.getItem("userId");
-      const response = await apiFetch(`/posts?page=${nextPage}&size=10&userId=${userId}&sort=${sort}`);
-      if (!response.ok) throw new Error();
-      const data = await response.json();
-      setPosts((current) => reset ? data.content : [...current, ...data.content]);
-      page.current = nextPage + 1;
-      hasNext.current = !data.last;
-    } catch { alert("내 게시글을 불러오지 못했습니다."); }
-    finally { setLoading(false); }
-  }, [loading, sort]);
 
-  useEffect(() => { page.current = 0; hasNext.current = true; loadPosts(true); }, [sort]); // eslint-disable-line react-hooks/exhaustive-deps
+    try {
+      const response = await apiFetch(
+        `/posts/me?page=${requestedPage}&size=${PAGE_SIZE}&sort=${encodeURIComponent(sort)}`
+      );
+      if (!response.ok) throw new Error();
+
+      const data = await response.json();
+      const loadedPosts = data.content ?? [];
+
+      if (requestVersion !== requestVersionRef.current) return;
+
+      setPosts((currentPosts) => {
+        if (requestedPage === 0) return loadedPosts;
+
+        const mergedPosts = [...currentPosts, ...loadedPosts];
+
+        return Array.from(
+          new Map(
+            mergedPosts.map((post) => [post.postId, post])
+          ).values()
+        );
+      });
+
+      pageRef.current = requestedPage + 1;
+      hasNextRef.current = !data.last;
+    } catch {
+      if (requestVersion === requestVersionRef.current) {
+        alert("내 게시글을 불러오지 못했습니다.");
+      }
+    } finally {
+      if (requestVersion === requestVersionRef.current) {
+        isLoadingRef.current = false;
+        setLoading(false);
+      }
+    }
+  }, [sort]);
+
+  useEffect(() => {
+    requestVersionRef.current += 1;
+    const currentRequestVersion = requestVersionRef.current;
+
+    pageRef.current = 0;
+    hasNextRef.current = true;
+    isLoadingRef.current = false;
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPosts([]);
+    setLoading(false);
+
+    loadPosts(currentRequestVersion);
+  }, [sort, loadPosts]);
+
   useEffect(() => {
     const scroll = () => {
       if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 150) loadPosts();

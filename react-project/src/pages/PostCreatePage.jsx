@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../api/api";
 import PageHeader from "../components/PageHeader.jsx";
+import useAuth from "../hooks/useAuth.js";
 import "./PostCreatePage.css";
 
 const AREA_LIST = [
@@ -26,6 +27,7 @@ const AREA_LIST = [
 
 function PostCreatePage() {
     const navigate = useNavigate();
+    const { authenticated } = useAuth();
 
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -163,15 +165,7 @@ function PostCreatePage() {
          * accessToken이 없으면 POST /posts 요청을 보내지 않고
          * 로그인 페이지로 이동한다.
          */
-        const accessToken =
-            localStorage.getItem("accessToken");
-
-        const hasAccessToken =
-            accessToken &&
-            accessToken !== "null" &&
-            accessToken !== "undefined";
-
-        if (!hasAccessToken) {
+        if (!authenticated) {
             alert("로그인이 필요합니다.");
 
             navigate("/login", {
@@ -262,11 +256,6 @@ function PostCreatePage() {
         );
 
         formData.append(
-            "userId",
-            Number(localStorage.getItem("userId"))
-        );
-
-        formData.append(
             "area",
             area
         );
@@ -337,18 +326,6 @@ function PostCreatePage() {
              * apiFetch가 401 처리 과정에서 토큰을 삭제한 경우에도
              * 일반 오류 메시지를 추가로 띄우지 않는다.
              */
-            const currentAccessToken =
-                localStorage.getItem("accessToken");
-
-            const hasCurrentAccessToken =
-                currentAccessToken &&
-                currentAccessToken !== "null" &&
-                currentAccessToken !== "undefined";
-
-            if (!hasCurrentAccessToken) {
-                return;
-            }
-
             alert(
                 "게시글을 작성하는 중 오류가 발생했습니다."
             );

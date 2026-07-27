@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { clearLoginStorage } from "../utils/auth.js";
+import useAuth from "../hooks/useAuth.js";
 
 export function ProfileImage({ src, className = "" }) {
   if (!src || src === "null" || src === "undefined") return null;
@@ -15,10 +15,10 @@ export function ProfileImage({ src, className = "" }) {
 
 export default function PageHeader({ backTo, onBack, requireLogin = true }) {
   const navigate = useNavigate();
-  const isLogin = localStorage.getItem("isLogin") === "true";
+  const { isLogin, profileImage, logout: clearAuth } = useAuth();
 
   function logout() {
-    clearLoginStorage();
+    clearAuth();
     alert("로그아웃 되었습니다.");
     navigate("/login");
   }
@@ -40,7 +40,7 @@ export default function PageHeader({ backTo, onBack, requireLogin = true }) {
           <div className="profile-menu">
             <button className="user-info-btn header-profile-circle" type="button">
               <ProfileImage
-                src={localStorage.getItem("profileImage")}
+                src={profileImage}
                 className="header-profile-image"
               />
             </button>
