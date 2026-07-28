@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth.js";
+import { toRelativeAssetUrl } from "../utils/url.js";
 
 export function ProfileImage({ src, className = "" }) {
   if (!src || src === "null" || src === "undefined") return null;
   return (
     <img
       className={`profile-image ${className}`}
-      src={src}
+      src={toRelativeAssetUrl(src)}
       alt="프로필사진"
       style={{ display: "block" }}
     />

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../api/api.js";
+import { toRelativeAssetUrl } from "../utils/url.js";
 import PageHeader, { ProfileImage } from "../components/PageHeader.jsx";
 import "./MyPostPage.css";
 
@@ -13,7 +14,7 @@ function Thumbnail({ path }) {
   useEffect(() => {
     let url = "";
     if (!path) return undefined;
-    apiFetch(path.replace("http://localhost:8080", ""))
+    apiFetch(toRelativeAssetUrl(path))
       .then(async (response) => {
         if (response.ok) {
           url = URL.createObjectURL(await response.blob());

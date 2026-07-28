@@ -1,8 +1,12 @@
 import { clearLoginStorage } from "../utils/auth.js";
 
-const API_BASE_URL = "";
+const API_BASE_URL = "/api";
 
 export async function apiFetch(url, options = {}) {
+    const requestUrl = url.startsWith("/uploads/")
+        ? url
+        : `${API_BASE_URL}${url}`;
+
     const accessToken =
         localStorage.getItem("accessToken");
 
@@ -40,7 +44,7 @@ export async function apiFetch(url, options = {}) {
     }
 
     const response = await fetch(
-        `${API_BASE_URL}${url}`,
+        requestUrl,
         {
             ...options,
             headers,

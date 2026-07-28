@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../api/api.js";
+import { toRelativeAssetUrl } from "../utils/url.js";
 import PageHeader, { ProfileImage } from "../components/PageHeader.jsx";
 import useAuth from "../hooks/useAuth.js";
 import "./PostPage.css";
@@ -79,7 +80,7 @@ function PostPage() {
           ? [...value.postImages].sort((a, b) => a.imageOrder - b.imageOrder)
           : [{ imageUrl: value.representativeImage ?? value.postImage }];
         const loaded = await Promise.all(images.filter((image) => image.imageUrl).map(async (image) => {
-          const path = image.imageUrl.replace("http://localhost:8080", "");
+          const path = toRelativeAssetUrl(image.imageUrl);
           const imageResponse = await apiFetch(path);
           if (!imageResponse.ok) return null;
           const url = URL.createObjectURL(await imageResponse.blob());

@@ -172,7 +172,7 @@ function SignupPage() {
 
         try {
             const response = await fetch(
-            "/users/signup",
+            "/api/users/signup",
             {
                 method: "POST",
                 body: formData,

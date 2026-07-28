@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { apiFetch } from "../api/api.js";
+import { toRelativeAssetUrl } from "../utils/url.js";
 import PageHeader from "../components/PageHeader.jsx";
 import "./PostUpdatePage.css";
 
@@ -46,7 +47,7 @@ function PostUpdatePage() {
               .filter((image) => image.imageUrl);
 
         const loadedImages = await Promise.all(storedImages.map(async (storedImage, index) => {
-          const imagePath = storedImage.imageUrl.replace("http://localhost:8080", "");
+          const imagePath = toRelativeAssetUrl(storedImage.imageUrl);
           const response = await apiFetch(imagePath);
           if (!response.ok) return null;
 

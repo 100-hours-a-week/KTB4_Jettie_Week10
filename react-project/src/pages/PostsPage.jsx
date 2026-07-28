@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { apiFetch } from "../api/api.js";
+import { toRelativeAssetUrl } from "../utils/url.js";
 import useAuth from "../hooks/useAuth.js";
 import "./PostsPage.css";
 
@@ -85,10 +86,7 @@ function PostThumbnail({ postImage }) {
       }
 
       try {
-        const imagePath = postImage.replace(
-          "http://localhost:8080",
-          "",
-        );
+        const imagePath = toRelativeAssetUrl(postImage);
 
         const response = await apiFetch(imagePath);
 
@@ -153,7 +151,7 @@ function ProfileImage({ src, className = "" }) {
   return (
     <img
       className={`profile-image ${className}`.trim()}
-      src={src}
+      src={toRelativeAssetUrl(src)}
       alt="프로필사진"
       style={{ display: "block" }}
     />
