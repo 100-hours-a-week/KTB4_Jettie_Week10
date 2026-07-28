@@ -1,6 +1,6 @@
 import { clearLoginStorage } from "../utils/auth.js";
 
-const API_BASE_URL = "http://localhost:8080";
+const API_BASE_URL = "";
 
 export async function apiFetch(url, options = {}) {
     const accessToken =

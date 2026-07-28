@@ -172,7 +172,7 @@ function SignupPage() {
 
         try {
             const response = await fetch(
-            "http://localhost:8080/users/signup",
+            "/users/signup",
             {
                 method: "POST",
                 body: formData,
