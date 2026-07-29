@@ -23,7 +23,6 @@ import org.springframework.security.core.Authentication;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@CrossOrigin(origins = {"http://127.0.0.1:5500", "http://localhost:5500"})
 @RestController
 @RequestMapping("/posts")
 public class PostController {
