@@ -57,7 +57,10 @@ public class SecurityConfig {
                         .requestMatchers("/users/signup", "/users/login").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/posts").permitAll()
-                        .requestMatchers("/uploads/profile/**").permitAll()
+                        .requestMatchers(
+                                "/uploads/profile/**",
+                                "/uploads/post/**"
+                        ).permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
