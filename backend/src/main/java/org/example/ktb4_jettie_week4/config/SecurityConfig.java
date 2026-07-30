@@ -90,9 +90,7 @@ public class SecurityConfig {
                 "http://127.0.0.1:5173",
                 "http://localhost:3000",
                 "http://127.0.0.1:3000",
-                "http://localhost:3000",
-                "http://13.209.6.160:3000",
-                "http://54.180.100.200:3000"
+                "http://43.201.10.105:3000"
         ));
 
         configuration.setAllowedMethods(List.of(
