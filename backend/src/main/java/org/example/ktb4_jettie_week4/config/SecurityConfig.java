@@ -93,7 +93,7 @@ public class SecurityConfig {
                 "http://127.0.0.1:5173",
                 "http://localhost:3000",
                 "http://127.0.0.1:3000",
-                "http://43.201.10.105:3000"
+                "http://3.34.58.227:3000"
         ));
 
         configuration.setAllowedMethods(List.of(
