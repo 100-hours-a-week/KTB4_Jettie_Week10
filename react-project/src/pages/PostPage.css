@@ -441,7 +441,7 @@ body .post-container .post-info-wrap {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 11px;
+    gap: 13px;
 
     width: 100%;
     height: auto;

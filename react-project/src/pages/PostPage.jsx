@@ -153,7 +153,7 @@ function PostPage() {
         <div className="post-wrap">
           <div className="post-info-wrap">
             <div className="post-title">
-              <span className="post-area">#{AREA[post.area] ?? "지역 없음"}</span>
+              <span className="post-area">🐾 {AREA[post.area] ?? "지역 없음"}</span>
               {post.title}
             </div>
             <div className="post-info">

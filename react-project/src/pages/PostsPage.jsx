@@ -456,7 +456,7 @@ function PostsPage() {
         </p>
 
         <section className="area-filter-wrap">
-          <p>지역별 태그</p>
+          <p>다른 발자국을 따라가보세요!</p>
 
           <div className="area-filter">
             {AREA_LIST.map((area) => (

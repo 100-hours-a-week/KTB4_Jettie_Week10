@@ -173,7 +173,7 @@ hr {
 .area-filter-wrap {
     background-color: rgb(255, 255, 255);
     padding: 10px 25px;
-    width: 600px;
+    width: 640px;
     max-width: calc(100vw - 24px);
     box-sizing: border-box;
     border:#8dcbc4 solid 5px;
@@ -196,7 +196,7 @@ hr {
 }
 .area-filter-btn {
     min-width: 0;
-    padding: 8px 4px;
+    padding: 8px 7px;
     background-color: #FFFFFF;
     border: none;
     font-size: clamp(12px, 2.8vw, 18px);
