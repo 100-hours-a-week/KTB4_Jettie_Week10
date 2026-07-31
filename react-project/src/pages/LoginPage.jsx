@@ -123,7 +123,7 @@ function LoginPage() {
     <main className="login-container">
       <header className="title">
         <Link to="/posts" className="home-link">
-          <h1>아무 말 대잔치</h1>
+          <h1>여행발자국</h1>
         </Link>
       </header>
 

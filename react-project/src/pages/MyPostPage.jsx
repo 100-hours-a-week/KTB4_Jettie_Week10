@@ -34,6 +34,7 @@ function Thumbnail({ path }) {
 function MyPostPage() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
+  const [totalElements, setTotalElements] = useState(0);
   const [sort, setSort] = useState("latest-sort");
   const [loading, setLoading] = useState(false);
   const pageRef = useRef(0);
@@ -62,6 +63,7 @@ function MyPostPage() {
 
       if (requestVersion !== requestVersionRef.current) return;
 
+      setTotalElements(data.totalElements ?? 0);
       setPosts((currentPosts) => {
         if (requestedPage === 0) return loadedPosts;
 
@@ -98,6 +100,7 @@ function MyPostPage() {
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setPosts([]);
+    setTotalElements(0);
     setLoading(false);
 
     loadPosts(currentRequestVersion);
@@ -116,6 +119,7 @@ function MyPostPage() {
       <PageHeader backTo="/posts" />
       <main className="content">
         <h2>나의 기록</h2>
+        <p className="my-post-total">🐾 {totalElements}개의 발자국</p>
         <div className="detail-content">
           <select className="sort-select" value={sort} onChange={(e) => setSort(e.target.value)}>
             <option value="latest-sort">최신순</option>
@@ -123,7 +127,7 @@ function MyPostPage() {
             <option value="view-sort">조회수순</option>
           </select>
           <div className="post-list">
-            {!loading && posts.length === 0 && <p className="empty-message">작성한 게시글이 없습니다.</p>}
+            {!loading && posts.length === 0 && <p className="empty-message">첫 발자국을 남겨보세요!</p>}
             {posts.map((post) => (
               <article className="post" key={post.postId} onClick={() => navigate(`/posts/${post.postId}`)}>
                 <div className="post-info">
@@ -131,7 +135,9 @@ function MyPostPage() {
                   <Thumbnail path={post.representativeImage ?? post.postImage} />
                   <div className="post-title">{post.title}</div>
                   <div className="post-count">
-                    좋아요 {formatCount(post.likeCount)} 댓글 {formatCount(post.commentCount)} 조회수 {formatCount(post.viewCount)}
+                    <span>❤️ {formatCount(post.likeCount)}</span>
+                    <span>💬 {formatCount(post.commentCount)}</span>
+                    <span>👀 {formatCount(post.viewCount)}</span>
                   </div>
                   <span className="post-create-date">{post.postCreatedAt}</span>
                 </div><hr />

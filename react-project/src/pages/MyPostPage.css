@@ -183,7 +183,13 @@ body .my-post-page .content {
 }
 
 body .my-post-page .content h2 {
-    margin: 20px 0;
+    margin: 20px 0 6px;
+}
+
+body .my-post-page .my-post-total {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 600;
 }
 
 body .my-post-page .detail-content {

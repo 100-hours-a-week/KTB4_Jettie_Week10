@@ -9,7 +9,12 @@ function SignupPage() {
     const navigate = useNavigate();
 
     function handleBackClick() {
-        navigate("/login");
+        if ((window.history.state?.idx ?? 0) > 0) {
+            navigate(-1);
+            return;
+        }
+
+        navigate("/login", { replace: true });
     }
     const [profileImage, setProfileImage] = useState(null);
     const [profileImageError, setProfileImageError] = useState("");
@@ -209,7 +214,7 @@ function SignupPage() {
         <div className="title">
             <button className="back-btn" type="button" onClick={handleBackClick}> {"<"} </button>
             <Link to="/posts" className="home-link">
-                <h1>아무 말 대잔치</h1>
+                <h1>여행발자국</h1>
             </Link>
         </div>
         <hr className="main-hr" />

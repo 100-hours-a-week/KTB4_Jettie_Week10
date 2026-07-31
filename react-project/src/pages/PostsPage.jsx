@@ -183,9 +183,9 @@ function PostCard({ post, onClick }) {
         </div>
 
         <div className="post-count">
-          좋아요 {formatCount(post.likeCount)} 댓글{" "}
-          {formatCount(post.commentCount)} 조회수{" "}
-          {formatCount(post.viewCount)}
+          <span>❤️ {formatCount(post.likeCount)}</span>
+          <span>💬 {formatCount(post.commentCount)}</span>
+          <span>👀 {formatCount(post.viewCount)}</span>
         </div>
 
         <div className="post-create-date">
@@ -398,7 +398,7 @@ function PostsPage() {
     <div className="posts-container">
       <header className="title">
         <Link to="/posts" className="home-link">
-          <h1>아무 말 대잔치</h1>
+          <h1>여행발자국</h1>
         </Link>
 
         {authenticated && (
@@ -454,7 +454,7 @@ function PostsPage() {
         <p className="intro-text">
           안녕하세요,
           <br />
-          아무 말 대잔치 <b>게시판</b>입니다.
+          여행발자국 <b>게시판</b>입니다.
         </p>
 
         <section className="area-filter-wrap">
@@ -474,7 +474,7 @@ function PostsPage() {
                   handleAreaClick(area.value)
                 }
               >
-                #{area.label}
+                🐾 {area.label}
               </button>
             ))}
           </div>
@@ -514,7 +514,7 @@ function PostsPage() {
               posts.length === 0 &&
               !loadError && (
                 <p className="empty-message">
-                  게시글이 없습니다.
+                  첫 발자국을 남겨보세요!
                 </p>
               )}
 

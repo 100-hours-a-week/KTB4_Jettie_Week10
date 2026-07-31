@@ -18,6 +18,20 @@ export default function PageHeader({ backTo, onBack, requireLogin = true }) {
   const navigate = useNavigate();
   const { isLogin, profileImage, logout: clearAuth } = useAuth();
 
+  function goBack() {
+    if (onBack) {
+      onBack();
+      return;
+    }
+
+    if ((window.history.state?.idx ?? 0) > 0) {
+      navigate(-1);
+      return;
+    }
+
+    navigate(backTo, { replace: true });
+  }
+
   function logout() {
     clearAuth();
     alert("로그아웃 되었습니다.");
@@ -31,12 +45,12 @@ export default function PageHeader({ backTo, onBack, requireLogin = true }) {
           <button
             className="back-btn"
             type="button"
-            onClick={onBack ?? (() => navigate(backTo))}
+            onClick={goBack}
           >
             {"<"}
           </button>
         )}
-        <Link to="/posts" className="home-link"><h1>아무 말 대잔치</h1></Link>
+        <Link to="/posts" className="home-link"><h1>여행발자국</h1></Link>
         {(!requireLogin || isLogin) && isLogin && (
           <div className="profile-menu">
             <button className="user-info-btn header-profile-circle" type="button">
