@@ -8,6 +8,9 @@ services:
       - "8080:8080"
     volumes:
       - ./backend/uploads:/app/uploads
+    environment:
+      TZ: Asia/Seoul
+      JAVA_TOOL_OPTIONS: "-Duser.timezone=Asia/Seoul"
     restart: unless-stopped
 
   frontend:
