@@ -20,10 +20,11 @@ function PostUpdatePage() {
   const [content, setContent] = useState("");
   const [area, setArea] = useState("");
   const [images, setImages] = useState([]);
-  const [originalImageIds, setOriginalImageIds] = useState([]);
+  const [deletedImageIds, setDeletedImageIds] = useState([]);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const newPreviewUrlsRef = useRef(new Set());
+  const newImageKeyRef = useRef(0);
 
   useEffect(() => () => {
     newPreviewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
@@ -79,7 +80,7 @@ function PostUpdatePage() {
         if (!cancelled) {
           const validImages = loadedImages.filter(Boolean);
           setImages(validImages);
-          setOriginalImageIds(validImages.map((image) => image.imageId));
+          setDeletedImageIds([]);
         }
       } catch {
         alert("게시글을 불러오지 못했습니다.");
@@ -95,24 +96,32 @@ function PostUpdatePage() {
 
   function selectImages(event) {
     const files = Array.from(event.target.files ?? []);
-    if (!files.length) return;
-    if (files.some((file) => !file.type.startsWith("image/"))) {
-      alert("이미지 파일만 선택할 수 있습니다.");
+    try {
+      if (!files.length) return;
+      if (files.some((file) => !file.type.startsWith("image/"))) {
+        alert("이미지 파일만 선택할 수 있습니다.");
+        return;
+      }
+      if (images.length + files.length > 10) {
+        alert("기존 이미지와 새 이미지를 합쳐 최대 10장까지 등록할 수 있습니다.");
+        return;
+      }
+      const added = files.map((file) => {
+        const previewUrl = URL.createObjectURL(file);
+        newPreviewUrlsRef.current.add(previewUrl);
+        newImageKeyRef.current += 1;
+        return {
+          key: `new-${Date.now()}-${newImageKeyRef.current}`,
+          type: "new",
+          file,
+          previewUrl,
+        };
+      });
+      setImages((current) => [...current, ...added]);
+      setError("");
+    } finally {
       event.target.value = "";
-      return;
     }
-    if (images.length + files.length > 10) {
-      alert("기존 이미지와 새 이미지를 합쳐 최대 10장까지 등록할 수 있습니다.");
-      event.target.value = "";
-      return;
-    }
-    const added = files.map((file) => {
-      const previewUrl = URL.createObjectURL(file);
-      newPreviewUrlsRef.current.add(previewUrl);
-      return { key: `new-${crypto.randomUUID()}`, type: "new", file, previewUrl };
-    });
-    setImages((current) => [...current, ...added]);
-    event.target.value = "";
   }
 
   function removeImage(index) {
@@ -121,6 +130,12 @@ function PostUpdatePage() {
     if (target.type === "new") {
       URL.revokeObjectURL(target.previewUrl);
       newPreviewUrlsRef.current.delete(target.previewUrl);
+    } else {
+      setDeletedImageIds((current) => (
+        current.includes(target.imageId)
+          ? current
+          : [...current, target.imageId]
+      ));
     }
     setImages((current) => current.filter((_, itemIndex) => itemIndex !== index));
     setError("");
@@ -136,6 +151,9 @@ function PostUpdatePage() {
     });
   }
 
+  const existingImages = images.filter((item) => item.type === "existing");
+  const newImages = images.filter((item) => item.type === "new");
+
   async function submit(event) {
     event.preventDefault();
     if (!title.trim() || !content.trim()) return setError("* 제목, 내용을 모두 작성해주세요.");
@@ -145,26 +163,41 @@ function PostUpdatePage() {
     formData.append("title", title.trim());
     formData.append("content", content.trim());
     formData.append("area", area);
-    const retainedIds = images.filter((item) => item.type === "existing").map((item) => item.imageId);
-    const deletedIds = originalImageIds.filter((imageId) => !retainedIds.includes(imageId));
+    const retainedIds = existingImages.map((item) => item.imageId);
     retainedIds.forEach((imageId) => formData.append("retainedImageIds", imageId));
-    deletedIds.forEach((imageId) => formData.append("deletedImageIds", imageId));
-    const newItems = images.filter((item) => item.type === "new");
-    newItems.forEach((item) => formData.append("newImages", item.file));
+    deletedImageIds.forEach((imageId) => formData.append("deletedImageIds", imageId));
+    newImages.forEach((item) => formData.append("newImages", item.file));
     images.forEach((item) => {
       if (item.type === "existing") {
         formData.append("imageOrder", `existing:${item.imageId}`);
       } else {
-        formData.append("imageOrder", `new:${newItems.indexOf(item)}`);
+        formData.append("imageOrder", `new:${newImages.indexOf(item)}`);
       }
     });
     try {
       setSubmitting(true);
       const response = await apiFetch(`/posts/${postId}`, { method: "PATCH", body: formData });
-      if (!response.ok) return alert(await response.text());
+      if (!response.ok) {
+        const message = await response.text();
+        setError(message || "* 게시글 수정에 실패했습니다.");
+        return;
+      }
       navigate(`/posts/${postId}`);
-    } catch { alert("서버와 연결할 수 없습니다."); }
+    } catch {
+      setError("* 서버와 연결할 수 없습니다.");
+    }
     finally { setSubmitting(false); }
+  }
+
+  const existingImageCount = existingImages.length;
+  const newImageCount = newImages.length;
+  let imageSelectionStatus = "선택된 이미지 없음";
+  if (existingImageCount > 0 && newImageCount > 0) {
+    imageSelectionStatus = `기존 ${existingImageCount}장 · 새로 선택 ${newImageCount}장`;
+  } else if (existingImageCount > 0) {
+    imageSelectionStatus = `기존 이미지 ${existingImageCount}장`;
+  } else if (newImageCount > 0) {
+    imageSelectionStatus = `새로 선택 ${newImageCount}장`;
   }
 
   const valid = Boolean(
@@ -197,7 +230,11 @@ function PostUpdatePage() {
           </div><hr />
           <div>
             <label htmlFor="post-image">이미지 ({images.length}/10)</label>
-            <input type="file" id="post-image" accept="image/*" multiple onChange={selectImages} />
+            <div className="update-image-picker">
+              <input type="file" id="post-image" accept="image/*" multiple onChange={selectImages} />
+              <label className="update-image-select-btn" htmlFor="post-image">파일 선택</label>
+              <span className="update-image-selection-status">{imageSelectionStatus}</span>
+            </div>
             <div className="update-image-list">
               {images.map((item, index) => (
                 <div className="update-image-item" key={item.key}>
