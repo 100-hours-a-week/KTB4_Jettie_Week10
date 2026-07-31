@@ -452,9 +452,7 @@ function PostsPage() {
 
       <main className="content">
         <p className="intro-text">
-          오늘도 새로운 발자국을
-          <br />
-          남겨볼까요? 🐾
+          오늘도 새로운 발자국을 남겨볼까요? 🐾
         </p>
 
         <section className="area-filter-wrap">

@@ -156,8 +156,12 @@ hr {
 }
 
 .intro-text {
-    font-size: 30px;
+    max-width: calc(100vw - 24px);
+    font-family: "Memoment", sans-serif;
+    font-size: clamp(14px, 4vw, 30px);
+    line-height: 1.2;
     text-align: center;
+    white-space: nowrap;
 }
 
 .detail-content {
@@ -170,6 +174,8 @@ hr {
     background-color: rgb(255, 255, 255);
     padding: 10px;
     width: 600px;
+    max-width: calc(100vw - 24px);
+    box-sizing: border-box;
     border:#8dcbc4 solid 5px;
     border-radius: 30px;
     display: flex;
@@ -183,16 +189,17 @@ hr {
 }
 .area-filter {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    column-gap: 4px;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    column-gap: 2px;
     row-gap: 2px;
     width: 100%;
 }
 .area-filter-btn {
     min-width: 0;
-    padding: 8px 6px;
+    padding: 8px 4px;
     background-color: #FFFFFF;
     border: none;
+    font-size: clamp(12px, 2.8vw, 18px);
     white-space: nowrap;
     cursor: pointer;
 }
@@ -424,6 +431,7 @@ body .posts-container .post-list .post-count {
     display: flex;
     align-items: center;
     flex-wrap: nowrap;
+    justify-content: flex-start;
     gap: 8px;
     width: 100%;
     height: auto;
@@ -432,7 +440,7 @@ body .posts-container .post-list .post-count {
     background: transparent;
     border: 0;
     border-radius: 0;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 400;
     line-height: 1.2;
     text-align: left;
@@ -449,7 +457,7 @@ body .posts-container .post-list .post-create-date {
     align-self: flex-start;
     width: 100%;
     margin: 2px 0 0;
-    font-size: 13px;
+    font-size: 15px;
     font-weight: 400;
     line-height: 1.2;
     text-align: left;
