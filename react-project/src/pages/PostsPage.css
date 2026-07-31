@@ -183,13 +183,17 @@ hr {
 }
 .area-filter {
     display: grid;
-    grid-template-columns: repeat(9, auto);
-    /* gap: 10px; */
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: 4px;
+    row-gap: 2px;
+    width: 100%;
 }
 .area-filter-btn {
-    padding: 8px 15px;
+    min-width: 0;
+    padding: 8px 6px;
     background-color: #FFFFFF;
     border: none;
+    white-space: nowrap;
     cursor: pointer;
 }
 .area-filter-btn:hover,
@@ -419,6 +423,7 @@ body .posts-container .post-list .post-title {
 body .posts-container .post-list .post-count {
     display: flex;
     align-items: center;
+    flex-wrap: nowrap;
     gap: 8px;
     width: 100%;
     height: auto;
@@ -431,6 +436,11 @@ body .posts-container .post-list .post-count {
     font-weight: 400;
     line-height: 1.2;
     text-align: left;
+    white-space: nowrap;
+}
+
+body .posts-container .post-list .post-count > span {
+    flex: 0 0 auto;
     white-space: nowrap;
 }
 

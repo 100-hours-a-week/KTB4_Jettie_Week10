@@ -239,20 +239,26 @@ body .post-container .post-info-wrap .post-create-date {
 }
 .post-count-wrap {
     display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
     justify-content: center;
+    gap: 10px;
 }
 .post-count {
     background-color: #d9d9d9;
     font-size: 15px;
     font-weight: bold;
     display: flex;
-    flex-direction: column;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: center;
     text-align: center;
-    width: 85px;
+    min-width: 70px;
     border: none;
     border-radius: 15px;
     padding: 10px;
-    margin: 15px 5px;
+    margin: 15px 0;
+    white-space: nowrap;
 }
 #liked-count-btn {
     cursor: pointer;
@@ -261,7 +267,8 @@ body .post-container .post-info-wrap .post-create-date {
     background-color: #3dbaab;
 }
 .post-count span {
-    margin: 3px;
+    margin: 0;
+    white-space: nowrap;
 }
 .comment-wrap {
     width: 600px;

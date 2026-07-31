@@ -173,7 +173,7 @@ function PostCard({ post, onClick }) {
     >
       <div className="post-info">
         <span className="post-area">
-          #{getAreaLabel(post.area)}
+          🐾 {getAreaLabel(post.area)}
         </span>
 
         <PostThumbnail postImage={getThumbnailPath(post)} />
@@ -452,9 +452,9 @@ function PostsPage() {
 
       <main className="content">
         <p className="intro-text">
-          안녕하세요,
+          오늘도 새로운 발자국을
           <br />
-          여행발자국 <b>게시판</b>입니다.
+          남겨볼까요? 🐾
         </p>
 
         <section className="area-filter-wrap">

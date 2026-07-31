@@ -1,3 +1,11 @@
+@font-face {
+  font-family: "Memoment";
+  src: url("/fonts/MemomentKkukkukk.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 :root {
   font-family: Arial, sans-serif;
   color: #000;
@@ -19,6 +27,12 @@ body,
 
 body {
   background-color: #F4F5F7;
+}
+
+.home-link h1 {
+  font-family: "Memoment", sans-serif;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 #root {

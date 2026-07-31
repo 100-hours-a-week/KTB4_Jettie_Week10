@@ -131,7 +131,7 @@ function MyPostPage() {
             {posts.map((post) => (
               <article className="post" key={post.postId} onClick={() => navigate(`/posts/${post.postId}`)}>
                 <div className="post-info">
-                  <span className="post-area">#{AREA[post.area] ?? "지역 없음"}</span>
+                  <span className="post-area">🐾 {AREA[post.area] ?? "지역 없음"}</span>
                   <Thumbnail path={post.representativeImage ?? post.postImage} />
                   <div className="post-title">{post.title}</div>
                   <div className="post-count">

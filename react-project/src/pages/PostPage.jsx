@@ -187,9 +187,9 @@ function PostPage() {
             )}
             <div className="post-content">{post.content}</div>
             <div className="post-count-wrap">
-              <button className={`post-count ${post.likedByMe ? "active" : ""}`} id="liked-count-btn" onClick={toggleLike}><span>{post.likeCount}</span><span>좋아요수</span></button>
-              <button className="post-count"><span>{comments.length}</span><span>댓글수</span></button>
-              <button className="post-count"><span>{post.viewCount}</span><span>조회수</span></button>
+              <button className={`post-count ${post.likedByMe ? "active" : ""}`} id="liked-count-btn" onClick={toggleLike}><span>❤️ {post.likeCount}</span></button>
+              <button className="post-count"><span>💬 {comments.length}</span></button>
+              <button className="post-count"><span>👀 {post.viewCount}</span></button>
             </div>
           </div>
         </div><hr />
