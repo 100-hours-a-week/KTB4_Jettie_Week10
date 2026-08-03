@@ -15,7 +15,6 @@ RUN npm run build
 FROM nginx:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 직접 작성한 Nginx 설정을 기본 설정 위치에 복사
 COPY nginx.conf /etc/nginx/conf.d/default.conf
