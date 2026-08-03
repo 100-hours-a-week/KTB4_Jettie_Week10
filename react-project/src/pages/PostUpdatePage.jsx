@@ -19,6 +19,9 @@ function PostUpdatePage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [area, setArea] = useState("");
+  const [hashtagInput, setHashtagInput] = useState("");
+  const [hashtags, setHashtags] = useState([]);
+  const [hashtagError, setHashtagError] = useState("");
   const [images, setImages] = useState([]);
   const [deletedImageIds, setDeletedImageIds] = useState([]);
   const [error, setError] = useState("");
@@ -42,6 +45,7 @@ function PostUpdatePage() {
         setTitle(post.title);
         setContent(post.content);
         setArea(post.area);
+        setHashtags(Array.isArray(post.hashtags) ? post.hashtags : []);
         const storedImages = post.postImages?.length
           ? [...post.postImages].sort((a, b) => a.imageOrder - b.imageOrder)
           : [{ imageUrl: post.representativeImage ?? post.postImage }]
@@ -151,6 +155,49 @@ function PostUpdatePage() {
     });
   }
 
+  function addHashtag() {
+    const tag = hashtagInput.trim();
+
+    if (tag === "") return;
+    if (/\s/.test(tag)) {
+      setHashtagError("해시태그에는 공백을 포함할 수 없습니다.");
+      return;
+    }
+    if (tag.includes("#")) {
+      setHashtagError("해시태그에는 #을 포함하지 마세요.");
+      return;
+    }
+    if (tag.length > 20) {
+      setHashtagError("해시태그는 20자 이하로 입력해주세요.");
+      return;
+    }
+    if (hashtags.includes(tag)) {
+      setHashtagError("이미 추가된 해시태그입니다.");
+      return;
+    }
+    if (hashtags.length >= 5) {
+      setHashtagError("해시태그는 최대 5개까지 입력할 수 있습니다.");
+      return;
+    }
+
+    setHashtags((current) => [...current, tag]);
+    setHashtagInput("");
+    setHashtagError("");
+  }
+
+  function handleHashtagKeyDown(event) {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (event.nativeEvent.isComposing) return;
+
+    event.preventDefault();
+    addHashtag();
+  }
+
+  function removeHashtag(tagToRemove) {
+    setHashtags((current) => current.filter((tag) => tag !== tagToRemove));
+    setHashtagError("");
+  }
+
   const existingImages = images.filter((item) => item.type === "existing");
   const newImages = images.filter((item) => item.type === "new");
 
@@ -163,6 +210,7 @@ function PostUpdatePage() {
     formData.append("title", title.trim());
     formData.append("content", content.trim());
     formData.append("area", area);
+    hashtags.forEach((tag) => formData.append("hashtags", tag));
     const retainedIds = existingImages.map((item) => item.imageId);
     retainedIds.forEach((imageId) => formData.append("retainedImageIds", imageId));
     deletedImageIds.forEach((imageId) => formData.append("deletedImageIds", imageId));
@@ -227,6 +275,41 @@ function PostUpdatePage() {
                 </label>
               ))}
             </div>
+          </div><hr />
+          <div className="hashtag-input-wrap">
+            <div className="hashtag-label-row">
+              <label htmlFor="update-hashtag-input">해시태그</label>
+              <span>{hashtags.length}/5</span>
+            </div>
+            <input
+              id="update-hashtag-input"
+              className="hashtag-input"
+              type="text"
+              value={hashtagInput}
+              onChange={(event) => {
+                setHashtagInput(event.target.value);
+                setHashtagError("");
+              }}
+              onKeyDown={handleHashtagKeyDown}
+              placeholder="Enter 또는 Space를 눌러 해시태그를 추가하세요!"
+            />
+            {hashtagError && <span className="hashtag-error">{hashtagError}</span>}
+            {hashtags.length > 0 && (
+              <div className="hashtag-list">
+                {hashtags.map((tag) => (
+                  <span className="hashtag-chip" key={tag}>
+                    #{tag}
+                    <button
+                      type="button"
+                      onClick={() => removeHashtag(tag)}
+                      aria-label={`${tag} 해시태그 삭제`}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
           </div><hr />
           <div>
             <label htmlFor="post-image">이미지 ({images.length}/10)</label>

@@ -34,7 +34,16 @@ function PostCreatePage() {
     const [postImages, setPostImages] = useState([]);
     const [previewUrls, setPreviewUrls] = useState([]);
     const [postCreateError, setPostCreateError] = useState("");
+    const [formErrors, setFormErrors] = useState({
+        title: "",
+        content: "",
+        area: "",
+        postImages: "",
+    });
     const [area, setArea] = useState("");
+    const [hashtagInput, setHashtagInput] = useState("");
+    const [hashtags, setHashtags] = useState([]);
+    const [hashtagError, setHashtagError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const MIN_IMAGE_COUNT = 1;
@@ -55,6 +64,10 @@ function PostCreatePage() {
         const value = event.target.value;
 
         setTitle(value.slice(0, 26));
+        setFormErrors((currentErrors) => ({
+            ...currentErrors,
+            title: "",
+        }));
         setPostCreateError("");
     }
 
@@ -62,12 +75,95 @@ function PostCreatePage() {
         const value = event.target.value;
 
         setContent(value);
+        setFormErrors((currentErrors) => ({
+            ...currentErrors,
+            content: "",
+        }));
         setPostCreateError("");
     }
 
     function handleAreaChange(event) {
         setArea(event.target.value);
+        setFormErrors((currentErrors) => ({
+            ...currentErrors,
+            area: "",
+        }));
         setPostCreateError("");
+    }
+
+    function addHashtag() {
+        const tag = hashtagInput.trim();
+
+        if (tag === "") {
+            return;
+        }
+
+        if (/\s/.test(tag)) {
+            setHashtagError(
+                "해시태그에는 공백을 포함할 수 없습니다."
+            );
+            return;
+        }
+
+        if (tag.includes("#")) {
+            setHashtagError(
+                "해시태그에는 #을 포함하지 마세요."
+            );
+            return;
+        }
+
+        if (tag.length > 20) {
+            setHashtagError(
+                "해시태그는 20자 이하로 입력해주세요."
+            );
+            return;
+        }
+
+        if (hashtags.includes(tag)) {
+            setHashtagError(
+                "이미 추가된 해시태그입니다."
+            );
+            return;
+        }
+
+        if (hashtags.length >= 5) {
+            setHashtagError(
+                "해시태그는 최대 5개까지 입력할 수 있습니다."
+            );
+            return;
+        }
+
+        setHashtags((currentHashtags) => [
+            ...currentHashtags,
+            tag,
+        ]);
+        setHashtagInput("");
+        setHashtagError("");
+    }
+
+    function handleHashtagKeyDown(event) {
+        if (
+            event.key !== "Enter" &&
+            event.key !== " "
+        ) {
+            return;
+        }
+
+        if (event.nativeEvent.isComposing) {
+            return;
+        }
+
+        event.preventDefault();
+        addHashtag();
+    }
+
+    function removeHashtag(tagToRemove) {
+        setHashtags((currentHashtags) =>
+            currentHashtags.filter(
+                (tag) => tag !== tagToRemove
+            )
+        );
+        setHashtagError("");
     }
 
     function handleImageChange(event) {
@@ -84,9 +180,10 @@ function PostCreatePage() {
         setPostImages([]);
 
         if (files.length === 0) {
-            setPostCreateError(
-                "* 여행 사진을 최소 한 장 선택해주세요."
-            );
+            setFormErrors((currentErrors) => ({
+                ...currentErrors,
+                postImages: "사진을 최소 한 장 선택해주세요.",
+            }));
             return;
         }
 
@@ -131,6 +228,10 @@ function PostCreatePage() {
         });
 
         setPreviewUrls(newPreviewUrls);
+        setFormErrors((currentErrors) => ({
+            ...currentErrors,
+            postImages: "",
+        }));
         setPostCreateError("");
     }
 
@@ -181,36 +282,25 @@ function PostCreatePage() {
             return;
         }
 
-        /*
-         * 2. 제목과 내용 검사
-         */
-        if (
-            title.trim() === "" ||
-            content.trim() === ""
-        ) {
-            setPostCreateError(
-                "* 제목, 내용을 모두 작성해주세요."
-            );
-            return;
-        }
+        const nextFormErrors = {
+            title: title.trim() === ""
+                ? "제목을 입력해주세요."
+                : "",
+            content: content.trim() === ""
+                ? "내용을 입력해주세요."
+                : "",
+            area: area === ""
+                ? "지역을 선택해주세요."
+                : "",
+            postImages: postImages.length < MIN_IMAGE_COUNT
+                ? "사진을 최소 한 장 선택해주세요."
+                : "",
+        };
 
-        /*
-         * 3. 지역 검사
-         */
-        if (area === "") {
-            setPostCreateError(
-                "* 지역을 선택해주세요."
-            );
-            return;
-        }
+        setFormErrors(nextFormErrors);
 
-        /*
-         * 4. 최소 이미지 개수 검사
-         */
-        if (postImages.length < MIN_IMAGE_COUNT) {
-            setPostCreateError(
-                "* 사진을 최소 한 장 선택해주세요."
-            );
+        if (Object.values(nextFormErrors).some(Boolean)) {
+            setPostCreateError("");
             return;
         }
 
@@ -264,6 +354,13 @@ function PostCreatePage() {
             formData.append(
                 "postImages",
                 file
+            );
+        });
+
+        hashtags.forEach(function (tag) {
+            formData.append(
+                "hashtags",
+                tag
             );
         });
 
@@ -361,6 +458,11 @@ function PostCreatePage() {
                             onChange={handleTitleChange}
                             placeholder="제목을 입력해주세요. (최대 26글자)"
                         />
+                        {formErrors.title && (
+                            <span className="field-error">
+                                {formErrors.title}
+                            </span>
+                        )}
                     </div>
 
                     <hr />
@@ -380,6 +482,11 @@ function PostCreatePage() {
                             onChange={handleContentChange}
                             placeholder="내용을 입력해주세요."
                         />
+                        {formErrors.content && (
+                            <span className="field-error">
+                                {formErrors.content}
+                            </span>
+                        )}
                     </div>
 
                     <hr />
@@ -418,6 +525,58 @@ function PostCreatePage() {
                                 }
                             )}
                         </div>
+                        {formErrors.area && (
+                            <span className="field-error">
+                                {formErrors.area}
+                            </span>
+                        )}
+                    </div>
+
+                    <hr />
+
+                    <div className="hashtag-input-wrap">
+                        <div className="hashtag-label-row">
+                            <label htmlFor="hashtag-input">
+                                해시태그
+                            </label>
+                            <span>{hashtags.length}/5</span>
+                        </div>
+
+                        <input
+                            id="hashtag-input"
+                            className="hashtag-input"
+                            type="text"
+                            value={hashtagInput}
+                            onChange={(event) => {
+                                setHashtagInput(event.target.value);
+                                setHashtagError("");
+                            }}
+                            onKeyDown={handleHashtagKeyDown}
+                            placeholder="Enter 또는 Space를 눌러 해시태그를 추가하세요!"
+                        />
+
+                        {hashtagError && (
+                            <span className="hashtag-error">
+                                {hashtagError}
+                            </span>
+                        )}
+
+                        {hashtags.length > 0 && (
+                            <div className="hashtag-list">
+                                {hashtags.map((tag) => (
+                                    <span className="hashtag-chip" key={tag}>
+                                        #{tag}
+                                        <button
+                                            type="button"
+                                            onClick={() => removeHashtag(tag)}
+                                            aria-label={`${tag} 해시태그 삭제`}
+                                        >
+                                            ×
+                                        </button>
+                                    </span>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     <hr />
@@ -434,6 +593,11 @@ function PostCreatePage() {
                             multiple
                             onChange={handleImageChange}
                         />
+                        {formErrors.postImages && (
+                            <span className="field-error">
+                                {formErrors.postImages}
+                            </span>
+                        )}
                     </div>
 
                     <div
@@ -478,7 +642,7 @@ function PostCreatePage() {
                         className={`post-create-btn ${
                             isFormValid ? "active" : ""
                         }`}
-                        disabled={!isFormValid || isSubmitting}
+                        disabled={isSubmitting}
                     >
                         {isSubmitting
                             ? "작성 중..."

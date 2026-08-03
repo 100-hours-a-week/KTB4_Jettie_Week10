@@ -173,7 +173,7 @@ hr {
 .area-filter-wrap {
     background-color: rgb(255, 255, 255);
     padding: 10px 25px;
-    width: 640px;
+    width: 720px;
     max-width: calc(100vw - 24px);
     box-sizing: border-box;
     border:#8dcbc4 solid 5px;
@@ -190,9 +190,8 @@ hr {
 .area-filter {
     display: grid;
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    column-gap: 2px;
-    row-gap: 2px;
-    width: 100%;
+    gap: 2px 4px;
+    width: min(100%, 600px);
 }
 .area-filter-btn {
     min-width: 0;
@@ -429,6 +428,30 @@ body .posts-container .post-list .post-title {
     line-height: 1.2;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body .posts-container .post-list .post-hashtags {
+    display: block;
+    width: 100%;
+    height: 23px;
+    margin: 0 0 7px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body .posts-container .post-list .post-hashtag {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 5px;
+    padding: 2px 7px;
+    color: #555555;
+    background-color: #eef2f2;
+    border: 1px solid #d9e2e1;
+    border-radius: 10px;
+    font-size: 12px;
+    line-height: 17px;
     white-space: nowrap;
 }
 

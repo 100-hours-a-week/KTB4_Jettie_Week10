@@ -33,6 +33,10 @@ public class Post {
     @OrderBy("imageOrder ASC, imageId ASC")
     private List<PostImage> postImages = new ArrayList<>();
 
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("tagOrder ASC, postHashtagId ASC")
+    private List<PostHashtag> postHashtags = new ArrayList<>();
+
     @Column(nullable = false)
     private int likeCount = 0;
 
@@ -72,6 +76,13 @@ public class Post {
         image.setPost(this);
         postImages.add(image);
         postImages.sort(Comparator.comparingInt(PostImage::getImageOrder));
+    }
+    public void addHashtag(PostHashtag postHashtag) {
+        postHashtags.add(postHashtag);
+    }
+
+    public void clearHashtags() {
+        postHashtags.clear();
     }
 
     public void replaceImages(List<PostImage> images) {

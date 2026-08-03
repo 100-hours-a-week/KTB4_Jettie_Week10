@@ -8,6 +8,9 @@ import org.example.ktb4_jettie_week4.repository.PostLikeRepository;
 import org.example.ktb4_jettie_week4.repository.PostRepository;
 import org.example.ktb4_jettie_week4.repository.UserRepository;
 import org.example.ktb4_jettie_week4.service.PostImageStorageService;
+import org.example.ktb4_jettie_week4.repository.HashtagRepository;
+import org.example.ktb4_jettie_week4.entity.Hashtag;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -32,12 +35,14 @@ public class PostController {
     private final UserRepository userRepository;
     private final PostLikeRepository postLikeRepository;
     private final PostImageStorageService postImageStorageService;
+    private final HashtagRepository hashtagRepository;
 
     public PostController(
             PostRepository postRepository,
             CommentRepository commentRepository,
             UserRepository userRepository,
             PostLikeRepository postLikeRepository,
+            HashtagRepository hashtagRepository,
             PostImageStorageService postImageStorageService
     ) {
         this.postRepository = postRepository;
@@ -45,6 +50,7 @@ public class PostController {
         this.userRepository = userRepository;
         this.postLikeRepository = postLikeRepository;
         this.postImageStorageService = postImageStorageService;
+        this.hashtagRepository = hashtagRepository;
     }
 
     // 게시글 목록 조회
@@ -135,8 +141,13 @@ public class PostController {
             @RequestParam String content,
             @RequestParam Area area,
             @RequestParam List<MultipartFile> postImages,
+            @RequestParam(required = false) List<String> hashtags,
             Authentication authentication
     ) {
+        System.out.println("전달받은 해시태그: " + hashtags);
+
+        validateHashtags(hashtags);
+
         if (title == null || title.isBlank()) {
             throw new ValidationException("제목을 입력해주세요.");
         }
@@ -168,6 +179,29 @@ public class PostController {
         List<String> savedPaths = new ArrayList<>();
         try {
             Post post = new Post(title, content, user, area);
+
+            // 해시태그가 있을 때만 하나씩 조회 및 생성
+            if (hashtags != null) {
+                for (int index = 0; index < hashtags.size(); index++) { // 인덱스로 태그 하나씩 꺼냄
+                    String hashtagName = hashtags.get(index);
+
+                    Hashtag hashtag = findOrCreateHashtag(hashtagName);
+
+                    // 연결 객체 생성 (어떤 게시글인가, 어떤 태그인가, 몇 번째 태그인가)
+                    PostHashtag postHashtag = new PostHashtag(post, hashtag, index);
+
+                    // 게시글 목록에 연결 객체 추가
+                    post.addHashtag(postHashtag);
+
+                    System.out.println(
+                            "연결한 해시태그: "
+                                    + hashtag.getName()
+                                    + ", 순서="
+                                    + index
+                    );
+                }
+            }
+
             for (int index = 0; index < postImages.size(); index++) {
                 String imagePath = postImageStorageService.save(postImages.get(index));
                 savedPaths.add(imagePath);
@@ -189,6 +223,7 @@ public class PostController {
             @RequestParam String title,
             @RequestParam String content,
             @RequestParam Area area,
+            @RequestParam(required = false) List<String> hashtags,
             @RequestParam(required = false) List<Long> retainedImageIds,
             @RequestParam(required = false) List<Long> deletedImageIds,
             @RequestParam(required = false) List<MultipartFile> newImages,
@@ -206,6 +241,8 @@ public class PostController {
         if (content == null || content.isBlank()) {
             throw new ValidationException("내용을 입력해주세요.");
         }
+
+        validateHashtags(hashtags);
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("게시글을 찾을 수 없습니다."));
@@ -269,6 +306,15 @@ public class PostController {
                     .filter(image -> !finalExistingIds.contains(image.getImageId()))
                     .map(PostImage::getImageUrl)
                     .toList();
+
+            post.clearHashtags();
+            postRepository.saveAndFlush(post);
+            if (hashtags != null) {
+                for (int index = 0; index < hashtags.size(); index++) {
+                    Hashtag hashtag = findOrCreateHashtag(hashtags.get(index));
+                    post.addHashtag(new PostHashtag(post, hashtag, index));
+                }
+            }
 
             post.updatePost(title, content, area);
             post.replaceImages(finalImages);
@@ -535,5 +581,61 @@ public class PostController {
         } catch (RuntimeException exception) {
             System.err.println("이미지 파일 삭제 실패: " + path);
         }
+    }
+
+    private void validateHashtags(List<String> hashtags) {
+        if (hashtags == null) {
+            return;
+        }
+
+        if (hashtags.size() > 5) {
+            throw new ValidationException(
+                    "해시태그는 최대 5개까지 등록할 수 있습니다."
+            );
+        }
+
+        Set<String> uniqueHashtags = new HashSet<>(hashtags);
+
+        if (uniqueHashtags.size() != hashtags.size()) {
+            throw new ValidationException(
+                    "중복된 해시태그는 등록할 수 없습니다."
+            );
+        }
+
+        for (String hashtag : hashtags) {
+            if (hashtag == null || hashtag.isBlank()) {
+                throw new ValidationException(
+                        "빈 해시태그는 등록할 수 없습니다."
+                );
+            }
+            if (hashtag.length() > 20) {
+                throw new ValidationException(
+                        "해시태그는 20자 이하로 입력해주세요."
+                );
+            }
+            if (hashtag.contains(" ")) {
+                throw new ValidationException(
+                        "해시태그에는 공백을 포함할 수 없습니다."
+                );
+            }
+            if (hashtag.contains("#")) {
+                throw new ValidationException(
+                        "해시태그 이름에는 #을 포함할 수 없습니다."
+                );
+            }
+        }
+
+    }
+    private Hashtag findOrCreateHashtag(String hashtagName) {
+        Optional<Hashtag> existingHashtag =
+                hashtagRepository.findByName(hashtagName);
+
+        if (existingHashtag.isPresent()) {
+            return existingHashtag.get();
+        }
+
+        return hashtagRepository.save(
+                new Hashtag(hashtagName)
+        );
     }
 }

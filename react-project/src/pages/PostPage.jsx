@@ -186,6 +186,15 @@ function PostPage() {
               </div>
             )}
             <div className="post-content">{post.content}</div>
+            {Array.isArray(post.hashtags) && post.hashtags.length > 0 && (
+              <div className="post-hashtags">
+                {post.hashtags.map((hashtag) => (
+                  <span className="post-hashtag" key={hashtag}>
+                    #{hashtag}
+                  </span>
+                ))}
+              </div>
+            )}
             <div className="post-count-wrap">
               <button className={`post-count ${post.likedByMe ? "active" : ""}`} id="liked-count-btn" onClick={toggleLike}><span>❤️ {post.likeCount}</span></button>
               <button className="post-count"><span>💬 {comments.length}</span></button>

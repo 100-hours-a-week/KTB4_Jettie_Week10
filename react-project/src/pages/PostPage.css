@@ -464,6 +464,23 @@ body .post-container .post-info-wrap .post-title {
     white-space: nowrap;
 }
 
+body .post-container .post-content-wrap .post-hashtags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px 8px;
+    width: 100%;
+    margin: 8px 5px 0;
+}
+
+body .post-container .post-content-wrap .post-hashtag {
+    padding: 3px 7px;
+    color: #555555;
+    background-color: #eef2f2;
+    border-radius: 10px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
 body .post-container .post-info-wrap .post-area {
     display: inline;
     margin: 0;

@@ -182,6 +182,16 @@ function PostCard({ post, onClick }) {
           {post.title}
         </div>
 
+        {Array.isArray(post.hashtags) && post.hashtags.length > 0 && (
+          <div className="post-hashtags">
+            {post.hashtags.map((hashtag) => (
+              <span className="post-hashtag" key={hashtag}>
+                #{hashtag}
+              </span>
+            ))}
+          </div>
+        )}
+
         <div className="post-count">
           <span>❤️ {formatCount(post.likeCount)}</span>
           <span>💬 {formatCount(post.commentCount)}</span>

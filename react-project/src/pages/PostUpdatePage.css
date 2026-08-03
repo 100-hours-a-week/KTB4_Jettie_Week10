@@ -207,6 +207,70 @@ hr {
     color: #fefefe;
     background-color: #3dbaab;
 }
+
+.post-update-container .hashtag-input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.post-update-container .hashtag-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.post-update-container .hashtag-label-row label {
+    font-weight: bold;
+}
+
+.post-update-container .hashtag-label-row span {
+    color: #666666;
+    font-size: 13px;
+}
+
+.post-update-container .hashtag-input-wrap .hashtag-input {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+}
+
+.post-update-container .hashtag-error {
+    color: red;
+    font-size: 12px;
+}
+
+.post-update-container .hashtag-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.post-update-container .hashtag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 8px;
+    color: #3b615d;
+    background-color: #e1f1ef;
+    border-radius: 14px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.post-update-container .hashtag-chip button {
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+}
+
 #post-image-preview {
     width: 150px;
     height: auto;

@@ -134,6 +134,15 @@ function MyPostPage() {
                   <span className="post-area">🐾 {AREA[post.area] ?? "지역 없음"}</span>
                   <Thumbnail path={post.representativeImage ?? post.postImage} />
                   <div className="post-title">{post.title}</div>
+                  {Array.isArray(post.hashtags) && post.hashtags.length > 0 && (
+                    <div className="post-hashtags">
+                      {post.hashtags.map((hashtag) => (
+                        <span className="post-hashtag" key={hashtag}>
+                          #{hashtag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                   <div className="post-count">
                     <span>❤️ {formatCount(post.likeCount)}</span>
                     <span>💬 {formatCount(post.commentCount)}</span>
