@@ -15,10 +15,6 @@ export async function apiFetch(url, options = {}) {
         options.headers || {}
     );
 
-    /*
-     * FormData를 보낼 때는 Content-Type을 직접 설정하지 않는다.
-     * 브라우저가 boundary를 포함해 자동으로 설정한다.
-     */
     const isFormData =
         options.body instanceof FormData;
 
@@ -71,10 +67,11 @@ export async function apiFetch(url, options = {}) {
     }
 
     if (response.status === 403) {
-        alert("접근 권한이 없습니다.");
+        const errorData = await response.json();
 
-        const error =
-            new Error("Forbidden");
+        const error = new Error(
+            errorData.message || "접근 권한이 없습니다."
+        );
 
         error.status = 403;
 

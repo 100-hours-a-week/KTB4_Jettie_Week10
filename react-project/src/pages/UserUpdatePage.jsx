@@ -75,9 +75,17 @@ function UserUpdatePage() {
     try {
       const response = await apiFetch(`/users/${userId}`, { method: "PATCH", body: formData });
       if (!response.ok) {
-        const message = await response.text();
-        if (message.includes("중복된 닉네임")) return setError("* 중복된 닉네임입니다.");
-        return alert(message);
+        const errorData = await response.json();
+
+        if (response.status === 409) {
+          return setError(
+            `* ${errorData.message || "중복된 닉네임입니다."}`
+          );
+        }
+
+        return alert(
+          errorData.message || "회원정보 수정에 실패했습니다."
+        );
       }
       const user = await response.json();
       if (previewUrlRef.current) {
@@ -92,7 +100,11 @@ function UserUpdatePage() {
         profileImage: user.profileImage || "",
       });
       setComplete(true); window.setTimeout(() => setComplete(false), 2000);
-    } catch { alert("서버와 연결할 수 없습니다."); }
+    } catch (error) {
+        if (error.status !== 401) {
+          alert(error.message || "서버와 연결할 수 없습니다.");
+        }
+      }
   }
 
   async function deleteUser() {

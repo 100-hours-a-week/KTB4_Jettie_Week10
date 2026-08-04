@@ -31,7 +31,7 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'com.mysql:mysql-connector-j'
+    runtimeOnly 'com.mysql:mysql-connector-j' // 스프링부트가 MySQL에 접속하기 위해서 MySQL과 통신할 드라이버 필요
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'

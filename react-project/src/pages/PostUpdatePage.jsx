@@ -226,14 +226,17 @@ function PostUpdatePage() {
       setSubmitting(true);
       const response = await apiFetch(`/posts/${postId}`, { method: "PATCH", body: formData });
       if (!response.ok) {
-        const message = await response.text();
-        setError(message || "* 게시글 수정에 실패했습니다.");
+        const errorData = await response.json();
+        setError(errorData.message || "* 게시글 수정에 실패했습니다.");
         return;
       }
-      navigate(`/posts/${postId}`);
-    } catch {
-      setError("* 서버와 연결할 수 없습니다.");
-    }
+      navigate(`/posts/${postId}`, { replace: true });
+    } catch (error) {
+    setError(
+        error.message ||
+        "* 서버와 연결할 수 없습니다."
+    );
+}
     finally { setSubmitting(false); }
   }
 

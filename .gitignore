@@ -30,5 +30,5 @@ backend/uploads/**
 !**/.env.example
 **/*.pem
 
-# Local backend configuration (may contain credentials)
-backend/src/main/resources/application.properties
+# Local H2 database files
+backend/data/

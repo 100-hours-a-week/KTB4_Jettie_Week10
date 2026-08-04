@@ -253,7 +253,7 @@ public class PostController {
                 .orElseThrow(() -> new AuthException("인증된 사용자를 찾을 수 없습니다."));
 
         if (!post.getUser().getUserId().equals(loginUser.getUserId())) {
-            throw new AuthException("게시글 수정 권한이 없습니다.");
+            throw new ForbiddenException("게시글 수정 권한이 없습니다.");
         }
 
         List<PostImage> originalImages = new ArrayList<>(post.getPostImages());
@@ -340,7 +340,7 @@ public class PostController {
                 .orElseThrow(() -> new AuthException("인증된 사용자를 찾을 수 없습니다."));
 
         if (!post.getUser().getUserId().equals(loginUser.getUserId())) {
-            throw new AuthException("게시글 삭제 권한이 없습니다.");
+            throw new ForbiddenException("게시글 삭제 권한이 없습니다.");
         }
         postLikeRepository.deleteByPost(post);
         commentRepository.deleteByPost(post);
@@ -467,7 +467,7 @@ public class PostController {
                 .orElseThrow(() -> new AuthException("인증된 사용자를 찾을 수 없습니다."));
 
         if (!comment.getUser().getUserId().equals(loginUser.getUserId())) {
-            throw new AuthException("댓글 삭제 권한이 없습니다.");
+            throw new ForbiddenException("댓글 삭제 권한이 없습니다.");
         }
 
         commentRepository.delete(comment);
@@ -502,7 +502,7 @@ public class PostController {
                 .orElseThrow(() -> new AuthException("인증된 사용자를 찾을 수 없습니다."));
 
         if (!comment.getUser().getUserId().equals(loginUser.getUserId())) {
-            throw new AuthException("댓글 수정 권한이 없습니다.");
+            throw new ForbiddenException("댓글 수정 권한이 없습니다.");
         }
         comment.updateComment(request.getCommentContent());
 
