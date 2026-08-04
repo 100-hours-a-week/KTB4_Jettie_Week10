@@ -28,6 +28,8 @@ jobs: # 워크플로우 안에서 실행할 큰 작업들
       - name: Build and test backend
         run: ./gradlew clean build --no-daemon
         working-directory: ./backend
+        env:
+          JWT_SECRET: test-jwt-secret-key-for-github-actions-1234567890
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
