@@ -8,8 +8,8 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       TZ: Asia/Seoul
-    ports:
-      - "3306:3306"
+    expose:
+      - "3306"
     volumes:
       - mysql-data:/var/lib/mysql
     healthcheck:
@@ -29,8 +29,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: jettie-backend
-    ports:
-      - "8080:8080"
+    expose:
+      - "8080"
     volumes:
       - ./backend/uploads:/app/uploads
     environment:
@@ -45,7 +45,7 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
       SPRING_SQL_INIT_MODE: never
 
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
 
     depends_on:
       mysql:

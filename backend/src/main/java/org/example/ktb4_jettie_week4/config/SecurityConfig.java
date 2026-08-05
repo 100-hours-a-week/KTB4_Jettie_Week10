@@ -41,8 +41,6 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
 
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
-
                 .exceptionHandling(exception -> exception
                         .authenticationEntryPoint((request, response, authException) -> {
                             response.setStatus(401);
@@ -61,7 +59,6 @@ public class SecurityConfig {
                                 "/uploads/profile/**",
                                 "/uploads/post/**"
                         ).permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
                         .anyRequest().authenticated()
                 )
 
