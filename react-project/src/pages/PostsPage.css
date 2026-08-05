@@ -164,6 +164,80 @@ hr {
     white-space: nowrap;
 }
 
+.hashtag-search-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: min(420px, calc(100vw - 32px));
+    margin: 4px auto 14px;
+}
+
+.hashtag-search-input-wrap {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    min-width: 0;
+    height: 40px;
+    padding: 0 12px;
+    box-sizing: border-box;
+    background-color: #ffffff;
+    border: 2px solid #8dcbc4;
+    border-radius: 20px;
+}
+
+.hashtag-search-prefix {
+    flex: 0 0 auto;
+    margin-right: 5px;
+    color: #3dbaab;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.posts-container .hashtag-search-input-wrap input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0;
+    background-color: #ffffff;
+    border: 0;
+    outline: none;
+    font-size: 15px;
+}
+
+.hashtag-search-input-wrap input:-webkit-autofill,
+.hashtag-search-input-wrap input:-webkit-autofill:hover,
+.hashtag-search-input-wrap input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #000000;
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset;
+    box-shadow: 0 0 0 1000px #ffffff inset;
+}
+
+.hashtag-search-form > button {
+    flex: 0 0 auto;
+    height: 40px;
+    padding: 0;
+    color: #ffffff;
+    background-color: #8dcbc4;
+    border: 0;
+    border-radius: 20px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.hashtag-search-form > .hashtag-search-reset-btn {
+    width: 40px;
+    font-size: 25px;
+}
+
+.hashtag-search-form > .hashtag-search-submit-btn {
+    padding: 0 18px;
+}
+
+.hashtag-search-form > button:hover {
+    background-color: #3dbaab;
+}
+
 .detail-content {
     display: flex;
     flex-direction: column;
@@ -453,6 +527,8 @@ body .posts-container .post-list .post-hashtag {
     font-size: 12px;
     line-height: 17px;
     white-space: nowrap;
+    font-family: inherit;
+    cursor: pointer;
 }
 
 body .posts-container .post-list .post-count {

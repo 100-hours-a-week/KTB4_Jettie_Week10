@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { apiFetch } from "../api/api.js";
 import { toRelativeAssetUrl } from "../utils/url.js";
 import useAuth from "../hooks/useAuth.js";
@@ -41,6 +41,10 @@ function formatCount(count) {
 
 function getAreaLabel(area) {
   return AREA_LABELS[area] ?? "지역 없음";
+}
+
+function normalizeHashtag(value) {
+  return value.trim().replace(/^#+/, "");
 }
 
 function isValidImagePath(imagePath) {
@@ -158,7 +162,7 @@ function ProfileImage({ src, className = "" }) {
   );
 }
 
-function PostCard({ post, onClick }) {
+function PostCard({ post, onClick, onHashtagClick }) {
   return (
     <div
       className="post"
@@ -185,9 +189,17 @@ function PostCard({ post, onClick }) {
         {Array.isArray(post.hashtags) && post.hashtags.length > 0 && (
           <div className="post-hashtags">
             {post.hashtags.map((hashtag) => (
-              <span className="post-hashtag" key={hashtag}>
+              <button
+                type="button"
+                className="post-hashtag"
+                key={hashtag}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onHashtagClick(hashtag);
+                }}
+              >
                 #{hashtag}
-              </span>
+              </button>
             ))}
           </div>
         )}
@@ -223,6 +235,10 @@ function PostCard({ post, onClick }) {
 
 function PostsPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialHashtag = normalizeHashtag(
+    searchParams.get("hashtag") ?? "",
+  );
   const {
     authenticated,
     profileImage: loginUserProfileImage,
@@ -234,6 +250,8 @@ function PostsPage() {
   const [sortOption, setSortOption] = useState("latest-sort");
   const [isLoading, setIsLoading] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const [hashtagInput, setHashtagInput] = useState(initialHashtag);
+  const [searchedHashtag, setSearchedHashtag] = useState(initialHashtag);
 
   const pageRef = useRef(0);
   const isLoadingRef = useRef(false);
@@ -292,6 +310,11 @@ function PostsPage() {
       if (selectedArea) {
         requestUrl +=
           `&area=${encodeURIComponent(selectedArea)}`;
+      }
+
+      if (searchedHashtag) {
+        requestUrl +=
+          `&hashtag=${encodeURIComponent(searchedHashtag)}`;
       }
 
       const response = await apiFetch(requestUrl);
@@ -358,8 +381,61 @@ function PostsPage() {
       }
     }
   },
-  [selectedArea, sortOption],
+  [selectedArea, searchedHashtag, sortOption],
 );
+
+  function reloadFirstPage() {
+    requestVersionRef.current += 1;
+    const currentRequestVersion = requestVersionRef.current;
+
+    pageRef.current = 0;
+    hasNextRef.current = true;
+    isLoadingRef.current = false;
+    setPosts([]);
+    setLoadError("");
+    loadPosts(currentRequestVersion);
+  }
+
+  function applyHashtagSearch(nextHashtag) {
+    if (nextHashtag === searchedHashtag) {
+      reloadFirstPage();
+      return;
+    }
+
+    setSearchedHashtag(nextHashtag);
+  }
+
+  function handleHashtagSearch(event) {
+    event.preventDefault();
+    applyHashtagSearch(normalizeHashtag(hashtagInput));
+  }
+
+  function handleHashtagReset() {
+    setHashtagInput("");
+    applyHashtagSearch("");
+
+    if (searchParams.has("hashtag")) {
+      navigate("/posts", { replace: true });
+    }
+  }
+
+  function handleHashtagClick(hashtag) {
+    const nextHashtag = normalizeHashtag(hashtag);
+    const searchConditionsWillChange =
+      nextHashtag !== searchedHashtag ||
+      selectedArea !== null ||
+      sortOption !== "latest-sort";
+
+    setHashtagInput(nextHashtag);
+    setSelectedArea(null);
+    setSortOption("latest-sort");
+    if (searchConditionsWillChange) {
+      setSearchedHashtag(nextHashtag);
+    } else {
+      reloadFirstPage();
+    }
+    navigate(`/posts?hashtag=${encodeURIComponent(nextHashtag)}`);
+  }
 
   useEffect(() => {
 
@@ -377,7 +453,7 @@ function PostsPage() {
     setLoadError("");
 
     loadPosts(currentRequestVersion);
-  }, [selectedArea, sortOption, loadPosts]);
+  }, [selectedArea, searchedHashtag, sortOption, loadPosts]);
 
   /**
    * 무한 스크롤
@@ -465,6 +541,34 @@ function PostsPage() {
           오늘도 새로운 발자국을 남겨볼까요? 🐾
         </p>
 
+        <form
+          className="hashtag-search-form"
+          onSubmit={handleHashtagSearch}
+          data-searched-hashtag={searchedHashtag}
+        >
+          <div className="hashtag-search-input-wrap">
+            <span className="hashtag-search-prefix" aria-hidden="true">#</span>
+            <input
+              type="text"
+              value={hashtagInput}
+              onChange={(event) => setHashtagInput(event.target.value)}
+              placeholder="해시태그를 입력하세요"
+              aria-label="해시태그 검색어"
+              className="hashtag-search-input"
+            />
+          </div>
+          <button
+            type="button"
+            className="hashtag-search-reset-btn"
+            onClick={handleHashtagReset}
+            aria-label="검색 초기화"
+            title="검색 초기화"
+          >
+            ↻
+          </button>
+          <button type="submit" className="hashtag-search-submit-btn">검색</button>
+        </form>
+
         <section className="area-filter-wrap">
           <p>다른 발자국을 따라가보세요!</p>
 
@@ -533,6 +637,7 @@ function PostsPage() {
                 onClick={() =>
                   navigate(`/posts/${post.postId}`)
                 }
+                onHashtagClick={handleHashtagClick}
               />
             ))}
 

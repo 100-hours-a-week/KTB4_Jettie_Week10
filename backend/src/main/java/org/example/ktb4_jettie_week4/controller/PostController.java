@@ -59,21 +59,35 @@ public class PostController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) Area area,
-            @RequestParam(defaultValue = "latest-sort") String sort
+            @RequestParam(defaultValue = "latest-sort") String sort,
+            @RequestParam(required = false) String hashtag
     ) {
         PageRequest pageRequest = PageRequest.of(
                 page,
                 size,
                 createPostSort(sort)
         );
-        // 1. 지역 필터
+        // 1. 지역 + 해시태그
+        if (area != null && hashtag != null && !hashtag.isBlank()) {
+            return postRepository
+                    .findByAreaAndHashtagName(area, hashtag, pageRequest)
+                    .map(PostResponseDto::new);
+        }
+
+        // 2. 지역만
         if (area != null) {
             return postRepository
                     .findByArea(area, pageRequest)
                     .map(PostResponseDto::new);
         }
 
-        // 2. 전체 목록
+        // 3. 해시태그만
+        if (hashtag != null && !hashtag.isBlank()) {
+            return postRepository
+                    .findByHashtagName(hashtag, pageRequest)
+                    .map(PostResponseDto::new);
+        }
+
         return postRepository
                 .findAll(pageRequest)
                 .map(PostResponseDto::new);

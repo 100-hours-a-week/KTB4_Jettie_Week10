@@ -137,9 +137,17 @@ function MyPostPage() {
                   {Array.isArray(post.hashtags) && post.hashtags.length > 0 && (
                     <div className="post-hashtags">
                       {post.hashtags.map((hashtag) => (
-                        <span className="post-hashtag" key={hashtag}>
+                        <button
+                          type="button"
+                          className="post-hashtag"
+                          key={hashtag}
+                          onClick={(event) => {
+                            event.stopPropagation();
+                            navigate(`/posts?hashtag=${encodeURIComponent(hashtag)}`);
+                          }}
+                        >
                           #{hashtag}
-                        </span>
+                        </button>
                       ))}
                     </div>
                   )}

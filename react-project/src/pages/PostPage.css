@@ -469,16 +469,25 @@ body .post-container .post-content-wrap .post-hashtags {
     flex-wrap: wrap;
     gap: 5px 8px;
     width: 100%;
-    margin: 8px 5px 0;
+    margin: 15px 5px 0;
+    /* background-color:#1a73e8; */
 }
 
 body .post-container .post-content-wrap .post-hashtag {
     padding: 3px 7px;
-    color: #555555;
-    background-color: #eef2f2;
+    color: #315a56;
+    background-color: #cfe9e6;
+    margin-right: 5px;
+    margin-top: 3px;
     border-radius: 10px;
-    font-size: 13px;
+    box-shadow: 0 1px 3px rgba(61, 186, 171, 0.2);
+    border: 0;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 0.7px;
     white-space: nowrap;
+    cursor: pointer;
 }
 
 body .post-container .post-info-wrap .post-area {
@@ -639,4 +648,8 @@ body .post-container .comment-detail-info {
 
 body .post-container .comment-detail-info .comment-creator {
     margin: 0 16px 0 0;
+}
+
+body .post-container .comment-content {
+    margin-left: calc(30px + 7px);
 }
