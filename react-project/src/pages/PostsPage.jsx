@@ -408,7 +408,7 @@ function PostsPage() {
     <div className="posts-container">
       <header className="title">
         <Link to="/posts" className="home-link">
-          <h1>여행발자국</h1>
+          <h1>여행발자국 깃헙액션테스트</h1>
         </Link>
 
         {authenticated && (
